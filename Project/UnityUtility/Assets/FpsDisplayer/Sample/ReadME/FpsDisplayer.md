@@ -4,7 +4,7 @@ Tool to display fps at GUI in Unity Engine.
 </br>
 
 ## Images
-<img src="/ReadME/Images/sample.png" width=954 height=584></img></br>
+<img src="/Images/sample.png" width=954 height=584></img></br>
 
 
 </br></br>
