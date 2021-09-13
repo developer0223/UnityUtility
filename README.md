@@ -1,7 +1,6 @@
 # UnityUtility
-Unity Utility Library made by developer0223.
-
-Contact : developer0223@gmail.com
+Unity Utility Library
+Please contact me if this library has any problem. (developer0223@gmail.com)
 
 
 </br>
