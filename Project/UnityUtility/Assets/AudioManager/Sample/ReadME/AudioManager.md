@@ -72,15 +72,3 @@ public void PauseEffect();
 public void ResumeEffect();
 public void StopEffect();
 ```
-
-
-
-
-
-
-
-
-
-
-
-
