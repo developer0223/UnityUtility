@@ -10,7 +10,7 @@ Various Unity Utility
 
 
 # FpsDisplayer
-> [See Details & How to Use](https://github.com/JungukHom/UnityUtility/blob/main/Project/UnityUtility/Assets/FpsDisplayer/FpsDisplayer.md "Detail of FpsDisplayer")
+> [See Details & How to Use](https://github.com/JungukHom/UnityUtility/blob/main/Project/UnityUtility/Assets/FpsDisplayer/Sample/ReadME/FpsDisplayer.md "Detail of FpsDisplayer")
 
 </br></br>
 
