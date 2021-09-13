@@ -28,6 +28,7 @@ public class ImageHelper : MonoBehaviour
     public static void FadeAlpha(Image image, float targetAlpha, float duration, Action callback = null)
     {
         ImageHelper helper = GetOrCreate();
+        helper.StopAllCoroutines();
         helper.StartCoroutine(helper.Co_FadeAlpha(image, targetAlpha, duration, () => { callback?.Invoke(); }));
     }
 
@@ -49,6 +50,35 @@ public class ImageHelper : MonoBehaviour
         Color lastColor = image.color;
         lastColor.a = targetAlpha;
         image.color = lastColor;
+
+        callback?.Invoke();
+    }
+
+    public static void FadeAlpha(SpriteRenderer renderer, float targetAlpha, float duration, Action callback = null)
+    {
+        ImageHelper helper = GetOrCreate();
+        helper.StopAllCoroutines();
+        helper.StartCoroutine(helper.Co_FadeAlpha(renderer, targetAlpha, duration, () => { callback?.Invoke(); }));
+    }
+
+    private IEnumerator Co_FadeAlpha(SpriteRenderer renderer, float targetAlpha, float duration, Action callback = null)
+    {
+        float start = renderer.color.a;
+        float end = targetAlpha;
+        float time = 0.0f;
+
+        while (Mathf.Abs(end - renderer.color.a) >= 0.03)
+        {
+            time += Time.deltaTime / duration;
+            Color newColor = renderer.color;
+            newColor.a = Mathf.Lerp(start, end, time);
+            renderer.color = newColor;
+            yield return null;
+        }
+
+        Color lastColor = renderer.color;
+        lastColor.a = targetAlpha;
+        renderer.color = lastColor;
 
         callback?.Invoke();
     }
