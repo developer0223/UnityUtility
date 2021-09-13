@@ -118,15 +118,6 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 효과음 볼륨 조절
-    /// </summary>
-    /// <param name="volume"></param>
-    public void SetEffectVolume(float volume)
-    {
-        EffectVolume = volume;
-    }
-
-    /// <summary>
     /// 배경음악 재생
     /// </summary>
     /// <param name="clip">배경음악</param>
@@ -194,6 +185,15 @@ public class AudioManager : MonoBehaviour
     public void SetEffectTime(float time)
     {
         effectSource.time = time;
+    }
+
+    /// <summary>
+    /// 효과음 볼륨 조절
+    /// </summary>
+    /// <param name="volume"></param>
+    public void SetEffectVolume(float volume)
+    {
+        EffectVolume = volume;
     }
 
     /// <summary>
