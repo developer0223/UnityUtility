@@ -15,29 +15,27 @@ Tool to display fps at GUI in Unity Engine.
 </br>
 
 ### Create
-```C#
-public FpsDisplayer CreateDisplayer() 
-{
-    // FpsDisplayer displayer = FpsDisplayer.GetOrCreate();
-    // FpsDisplayer displayer = FpsDisplayer.GetOrCreate(30);
-    FpsDisplayer displayer = FpsDisplayer.GetOrCreate(75, DisplayPosition.UpperRight);
-}
-```
 > Get or Create(instantiate) FpsDisplayer.
+```C#
+FpsDisplayer displayer = FpsDisplayer.GetOrCreate();
+FpsDisplayer displayer = FpsDisplayer.GetOrCreate(30);
+FpsDisplayer displayer = FpsDisplayer.GetOrCreate(75, DisplayPosition.UpperRight);
+```
 
 </br>
 
+> Create() method is implemented like this.</br>
+> Their default value is (fontSize : 30) and (displayPosition : DisplayerPosition.UpperLeft).
 ```C#
 public void GetOrCreate() {}
 public void GetOrCreate(int fontSize) {}
 public void GetOrCreate(int fontSize, DisplayPosition displayPosition) {}
 ```
-> Create() method is implemented like this.</br>
-> Their default value is (fontSize : 30) and (displayPosition : DisplayerPosition.UpperLeft).
 
 </br>
 
 ### Modify
+> Modify instantiated or created FpsDisplayer's text value.
 ```C#
 public void ModifyFpsDisplayer()
 {
@@ -47,15 +45,14 @@ public void ModifyFpsDisplayer()
     fpsDisplayer.SetDisplayPosition(DisplayPosition.MiddleCenter);
 }
 ```
-> Modify instantiated or created FpsDisplayer's text value.
 
 </br>
 
 ### Destroy
+> Destroy FpsDisplayer gameObject.
 ```C#
 public void DestroyFpsDisplayer()
 {
     FpsDisplayer.Destroy();
 }
 ```
-> Destroy FpsDisplayer gameObject.
