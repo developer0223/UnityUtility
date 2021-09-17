@@ -82,4 +82,29 @@ public class ImageHelper : MonoBehaviour
 
         callback?.Invoke();
     }
+
+    public static void FadeColor(Image image, Color targetColor, float duration, Action callback = null)
+    {
+        ImageHelper helper = GetOrCreate();
+        helper.StopAllCoroutines();
+        helper.StartCoroutine(helper.Co_FadeColor(image, targetColor, duration, () => { callback?.Invoke(); }));
+    }
+
+    private IEnumerator Co_FadeColor(Image image, Color targetColor, float duration, Action callback = null)
+    {
+        Color start = image.color;
+        Color end = targetColor;
+        float time = 0.0f;
+
+        while (Mathf.Abs(end.r - image.color.r) >= 0.03)
+        {
+            time += Time.deltaTime / duration;
+            image.color = Color.Lerp(start, end, time);
+            yield return null;
+        }
+
+        image.color = targetColor;
+
+        callback?.Invoke();
+    }
 }
