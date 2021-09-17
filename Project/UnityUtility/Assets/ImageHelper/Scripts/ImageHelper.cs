@@ -96,10 +96,15 @@ public class ImageHelper : MonoBehaviour
         Color end = targetColor;
         float time = 0.0f;
 
-        while (Mathf.Abs(end.r - image.color.r) >= 0.03)
+        float r, g, b, a;
+        while (Mathf.Abs(end.r - image.color.r) >= 0.005f || Mathf.Abs(end.g - image.color.g) >= 0.005f || Mathf.Abs(end.b - image.color.b) >= 0.005f)
         {
             time += Time.deltaTime / duration;
-            image.color = Color.Lerp(start, end, time);
+            r = Mathf.Lerp(start.r, end.r, time);
+            g = Mathf.Lerp(start.g, end.g, time);
+            b = Mathf.Lerp(start.b, end.b, time);
+            a = Mathf.Lerp(start.a, end.a, time);
+            image.color = new Color(r, g, b, a);
             yield return null;
         }
 

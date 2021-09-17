@@ -24,7 +24,22 @@ public class ImageHelperSample : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            ImageHelper.FadeAlpha(targetImage, 0.1f, fadeDuration);
+            ImageHelper.FadeAlpha(targetImage, 0.0f, fadeDuration);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            ImageHelper.FadeColor(targetImage, Color.red, fadeDuration);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            ImageHelper.FadeColor(targetImage, Color.green, fadeDuration);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            ImageHelper.FadeColor(targetImage, Color.white, fadeDuration);
         }
     }
 }
