@@ -1,20 +1,15 @@
 // System
-using System;
 using System.Collections;
 using System.Collections.Generic;
 
 // Unity
 using UnityEngine;
-using UnityEngine.UI;
-
-// Project
-// Alias
 
 public class Scheduler : MonoBehaviour
 {
     public static readonly string Path = "Prefabs/UnityUtility/Scheduler";
 
-    public List<Schedule<bool>> list = new List<Schedule<bool>>();
+    public List<Schedule> list = new List<Schedule>();
 
     public static Scheduler GetOrCreate()
     {
@@ -29,7 +24,7 @@ public class Scheduler : MonoBehaviour
         return _script;
     }
 
-    public static void Add(Schedule<bool> schedule)
+    public static void Add(Schedule schedule)
     {
         Scheduler scheduler = GetOrCreate();
         if (!Contains(schedule.name, out _))
@@ -70,5 +65,26 @@ public class Scheduler : MonoBehaviour
 
         index = -1;
         return false;
+    }
+
+    private void Start()
+    {
+        StartCoroutine(Co_ExecuteWhenExists());
+    }
+
+    private IEnumerator Co_ExecuteWhenExists()
+    {
+        while (true)
+        {
+            if (list.Count >= 1)
+            {
+                yield return StartCoroutine(list[0].callback);
+                list.RemoveAt(0);
+            }
+            else
+            {
+                yield return null;
+            }
+        }
     }
 }
