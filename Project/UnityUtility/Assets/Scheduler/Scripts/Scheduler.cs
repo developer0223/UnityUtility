@@ -1,4 +1,5 @@
 // System
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -10,6 +11,8 @@ public class Scheduler : MonoBehaviour
     public static readonly string Path = "Prefabs/UnityUtility/Scheduler";
 
     public List<Schedule> list = new List<Schedule>();
+
+    public static Action OnProgressFinished = null;
 
     public static Scheduler GetOrCreate()
     {
@@ -78,11 +81,18 @@ public class Scheduler : MonoBehaviour
         {
             if (list.Count >= 1)
             {
+                yield return new WaitForSeconds(list[0].preDelay);
                 yield return StartCoroutine(list[0].callback);
+                yield return new WaitForSeconds(list[0].postDelay);
                 list.RemoveAt(0);
             }
             else
             {
+                if (OnProgressFinished != null)
+                {
+                    OnProgressFinished?.Invoke();
+                    OnProgressFinished = null;
+                }
                 yield return null;
             }
         }

@@ -13,12 +13,20 @@ public class Schedule
     [SerializeField] public float postDelay = 0.0f;
     public IEnumerator callback = null;
 
-    public Schedule(string name, float preDelay = 0.0f, float postDelay = 0.0f, IEnumerator callback = null)
+    public Schedule(string name, IEnumerator callback, float preDelay = 0.0f, float postDelay = 0.0f)
     {
         this.name = name;
         this.preDelay = preDelay;
         this.postDelay = postDelay;
         this.callback = callback;
+    }
+
+    public static Schedule CreateAndRegister(string name, IEnumerator callback, float preDelay = 0.0f, float postDelay = 0.0f)
+    {
+        Schedule schedule = new Schedule(name, callback, preDelay, postDelay);
+        Scheduler.Add(schedule);
+
+        return schedule;
     }
 }
 
