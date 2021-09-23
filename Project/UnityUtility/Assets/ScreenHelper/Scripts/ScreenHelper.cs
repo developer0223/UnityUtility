@@ -11,7 +11,7 @@ using UnityEngine.UI;
 
 public class ScreenHelper : MonoBehaviour
 {
-    private static readonly string Path = "ScreenHelper";
+    private static readonly string Path = "Prefabs/UnityUtility/ScreenHelper";
 
     public Image img_background = null;
 
