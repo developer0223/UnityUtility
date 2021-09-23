@@ -7,7 +7,7 @@
     public class FpsDisplayer : MonoBehaviour
     {
         // private static readonly variables
-        private static readonly string Path = "FPSDisplayer";
+        private static readonly string Path = "Prefabs/UnityUtility/FPSDisplayer";
         private static readonly int MaxSortingOrder = 32767;
 
         // public variables to edit at editor
