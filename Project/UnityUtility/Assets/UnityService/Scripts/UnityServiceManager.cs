@@ -12,7 +12,7 @@ using UnityEngine.UI;
 
 public class UnityServiceManager : MonoBehaviour
 {
-    private static readonly string Path = "Prefabs/UnityService";
+    private static readonly string Path = "Prefabs/UnityUtility//UnityService";
 
     private static UnityServiceManager _instance = null;
 
