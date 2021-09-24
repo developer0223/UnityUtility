@@ -2,9 +2,13 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
+    [Header("Target AudioSources")]
     public AudioSource bgmSource;                       // 배경음악 출력용 오디오소스
     public AudioSource effectSource;                    // 효과음 출력용 오디오소스
 
+    /// <summary>
+    /// The Volume of bgm source
+    /// </summary>
     private float bgmVolume = 0.5f;                     // 배경음악 볼륨
     public float BGMVolume                              // 배경음악 볼륨
     {
@@ -15,6 +19,9 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// The Volume of effect source
+    /// </summary>
     private float effectVolume = 0.5f;                  // 효과음 볼륨
     public float EffectVolume                           // 효과음 볼륨
     {
@@ -22,6 +29,24 @@ public class AudioManager : MonoBehaviour
         set {
             effectVolume = value;
             effectSource.volume = value;
+        }
+    }
+
+    /// <summary>
+    /// Get BGM Source Playing
+    /// </summary>
+    public bool IsBGMPlaying {
+        get {
+            return bgmSource.isPlaying;
+        }
+    }
+
+    /// <summary>
+    /// Get Effect Source Playing
+    /// </summary>
+    public bool IsEffectPlaying {
+        get {
+            return effectSource.isPlaying;
         }
     }
 
@@ -115,6 +140,19 @@ public class AudioManager : MonoBehaviour
     public void SetBGMVolume(float volume)
     {
         BGMVolume = volume;
+    }
+
+    /// <summary>
+    /// 배경음악 재생
+    /// </summary>
+    /// <param name="repeat">반복 여부</param>
+    public void PlayBGM(bool repeat = true)
+    {
+        if (!bgmSource.isPlaying && bgmSource.clip != null)
+        {
+            bgmSource.loop = repeat;
+            bgmSource.Play();
+        }
     }
 
     /// <summary>
