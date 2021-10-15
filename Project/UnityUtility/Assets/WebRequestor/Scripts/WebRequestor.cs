@@ -80,7 +80,8 @@ public class WebRequestor : MonoBehaviour
 
     public IEnumerator Co_GetSprite(string uri, Action<bool, Sprite> callback, bool cache = true)
     {
-        string fileName = uri.Split('\\')[1];
+        string[] urlArray = uri.Split('\\');
+        string fileName = urlArray[urlArray.Length - 1];
 
         if (cache)
         {
