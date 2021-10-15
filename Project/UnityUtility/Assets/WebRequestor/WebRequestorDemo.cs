@@ -12,14 +12,11 @@ using UnityEngine.UI;
 
 public class WebRequestorDemo : MonoBehaviour
 {
-    public WebRequestor requestor = null;
-
     private void Start()
     {
-        requestor.GetRequest(WebRequestor.URI.Google, (success, result) =>
+        WebRequestor.GetRequest(WebRequestor.URL.Google, (success, result) =>
         {
             Debug.Log($"result : {(success ? "success" : "fail")} | result : {result}");
         });
     }
-
 }
