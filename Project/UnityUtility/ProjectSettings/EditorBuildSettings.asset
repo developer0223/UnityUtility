@@ -4,5 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/ResolutionManager/Sample/ResolutionManagerSample.unity
+    guid: c0163faa2aa150447b8424854e42435a
+  - enabled: 1
+    path: Assets/ResolutionManager/Sample/ResolutionManagerSample2.unity
+    guid: f0a0158a70c74f84fb29be91f7dfdaab
   m_configObjects: {}
