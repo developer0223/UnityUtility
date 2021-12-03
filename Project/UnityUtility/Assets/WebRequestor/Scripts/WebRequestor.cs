@@ -1,90 +1,207 @@
-// System
-using System;
-using System.IO;
-using System.Collections;
-
-// Unity
-using UnityEngine;
-using UnityEngine.Networking;
-
-// Project
-// Alias
-
-public class WebRequestor : MonoBehaviour
+namespace developer0223.WebRequestor
 {
-    private static readonly string ERROR_CODE = "ERROR";
+    // System
+    using System;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+    using System.Collections;
+    using System.Collections.Generic;
 
-    public static WebRequestor Instance = null;
-    public static int TIMEOUT_SECONDS = 5;
+    // Unity
+    using UnityEngine;
+    using UnityEngine.Networking;
 
-    public class URL
+    // Alias
+
+    public class WebRequestor : MonoBehaviour
     {
-        public static string Google = "https://www.google.com/";
-        //public static string DB = "";
-        //public static string FileServer = "";
-    }
+        public static int TIMEOUT_SECONDS = 5;
 
-    public static WebRequestor GetOrCreate()
-    {
-        if (Instance == null)
+        private static WebRequestor instance = null;
+
+        public class URL
         {
-            GameObject _gameObject = new GameObject(nameof(WebRequestor));
-            Instance = _gameObject.AddComponent<WebRequestor>();
+            public static readonly string GOOGLE = "http://wwww.google.com";
+            public static readonly string DB_SERVER = "";
+            public static readonly string FILE_SERVER = "";
         }
 
-        return Instance;
-    }
 
-    public static void GetRequest(string uri, Action<bool, string> callback)
-    {
-        WebRequestor webRequestor = GetOrCreate();
-        webRequestor.StartCoroutine(webRequestor.Co_GetRequest(uri, (result) =>
+
+        public static WebRequestor GetOrCreate()
         {
-            callback?.Invoke(result != ERROR_CODE, result);
-        }));
-    }
+            if (instance == null)
+            {
+                GameObject _gameObject = new GameObject(nameof(WebRequestor));
+                instance = _gameObject.AddComponent<WebRequestor>();
+            }
 
-    public IEnumerator Co_GetRequest(string uri, Action<string> callback)
-    {
-        using UnityWebRequest webRequest = UnityWebRequest.Get(uri);
-        webRequest.timeout = TIMEOUT_SECONDS;
-
-        yield return webRequest.SendWebRequest();
-
-        string[] pages = uri.Split('/');
-        int page = pages.Length - 1;
-
-        switch (webRequest.result)
-        {
-            case UnityWebRequest.Result.ConnectionError:
-            case UnityWebRequest.Result.DataProcessingError:
-                callback?.Invoke(ERROR_CODE);
-                break;
-            case UnityWebRequest.Result.ProtocolError:
-                callback?.Invoke(ERROR_CODE);
-                break;
-            case UnityWebRequest.Result.Success:
-                callback?.Invoke(webRequest.downloadHandler.text);
-                break;
+            return instance;
         }
-    }
 
-    public static void GetSprite(string uri, Action<bool, Sprite> callback, bool cache = true)
-    {
-        WebRequestor requestor = GetOrCreate();
-        requestor.StartCoroutine(requestor.Co_GetSprite(uri, (success, sprite) =>
+        #region Get Request
+        /// <summary>
+        /// Send http get request and get response.
+        /// </summary>
+        /// <param name="url">Target server url.</param>
+        /// <param name="parameters">Query parameters.</param>
+        /// <param name="callback">Callback method.</param>
+        public static void Get(string url, Dictionary<string, string> parameters, Action<long, string> callback)
         {
-            callback?.Invoke(success, sprite);
-        }, cache));
-    }
+            LoadingScreen.Show();
+            WebRequestor requestor = GetOrCreate();
+            string query = requestor.DictionaryToHttpQuery(parameters);
+            requestor.StartCoroutine(requestor.Co_Get($"{URL.DB_SERVER}{url}{query}", (responseCode, result) =>
+            {
+                LoadingScreen.Hide();
+                callback?.Invoke(responseCode, result);
+            }));
+        }
 
-    public IEnumerator Co_GetSprite(string uri, Action<bool, Sprite> callback, bool cache = true)
-    {
-        string[] urlArray = uri.Split('\\');
-        string fileName = urlArray[urlArray.Length - 1];
-
-        if (cache)
+        private IEnumerator Co_Get(string url, Action<long, string> callback)
         {
+            using UnityWebRequest webRequest = UnityWebRequest.Get(url);
+            webRequest.timeout = TIMEOUT_SECONDS;
+
+            yield return webRequest.SendWebRequest();
+            callback?.Invoke(webRequest.responseCode, webRequest.downloadHandler.text);
+        }
+        #endregion
+
+
+        #region Post Request
+        /// <summary>
+        /// Send http post request and get response.
+        /// </summary>
+        /// <param name="url">Target server url.</param>
+        /// <param name="formData">Body data.</param>
+        /// <param name="callback">Target server url.</param>
+        public static void Post(string url, WWWForm formData, Action<long, string> callback)
+        {
+            LoadingScreen.Show();
+            WebRequestor requestor = GetOrCreate();
+            requestor.StartCoroutine(requestor.Co_Post($"{URL.DB_SERVER}{url}", formData, (responseCode, result) =>
+            {
+                LoadingScreen.Hide();
+                callback?.Invoke(responseCode, result);
+            }));
+        }
+
+        /// <summary>
+        /// Send http post request and get response.
+        /// </summary>
+        /// <param name="url">Target server url.</param>
+        /// <param name="formData">Body data.</param>
+        /// <param name="callback">Target server url.</param>
+        public static void Post(string url, Dictionary<string, string> queryData, WWWForm formData, Action<long, string> callback)
+        {
+            LoadingScreen.Show();
+            WebRequestor requestor = GetOrCreate();
+            string query = requestor.DictionaryToHttpQuery(queryData);
+            requestor.StartCoroutine(requestor.Co_Post($"{URL.DB_SERVER}{url}{queryData}", formData, (responseCode, result) =>
+            {
+                LoadingScreen.Hide();
+                callback?.Invoke(responseCode, result);
+            }));
+        }
+
+        private IEnumerator Co_Post(string url, WWWForm formData, Action<long, string> callback)
+        {
+            using UnityWebRequest webRequest = UnityWebRequest.Post(url, formData);
+            webRequest.timeout = TIMEOUT_SECONDS;
+
+            yield return webRequest.SendWebRequest();
+            callback?.Invoke(webRequest.responseCode, webRequest.downloadHandler.text);
+        }
+        #endregion
+
+
+        #region Put Request
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="bodyData"></param>
+        /// <param name="callback"></param>
+        public static void Put(string url, Dictionary<string, string> bodyData, Action<long, string> callback)
+        {
+            LoadingScreen.Show();
+            WebRequestor requestor = GetOrCreate();
+            requestor.StartCoroutine(requestor.Co_Put($"{URL.DB_SERVER}{url}", bodyData, (responseCode, result) =>
+            {
+                LoadingScreen.Hide();
+                callback?.Invoke(responseCode, result);
+            }));
+        }
+
+        public static void Put(string url, Dictionary<string, string> parameters, Dictionary<string, string> bodyData, Action<long, string> callback)
+        {
+            LoadingScreen.Show();
+            WebRequestor requestor = GetOrCreate();
+            string query = requestor.DictionaryToHttpQuery(parameters);
+            requestor.StartCoroutine(requestor.Co_Put($"{URL.DB_SERVER}{url}{query}", bodyData, (responseCode, result) =>
+            {
+                LoadingScreen.Hide();
+                callback?.Invoke(responseCode, result);
+            }));
+        }
+
+        private IEnumerator Co_Put(string url, Dictionary<string, string> bodyData, Action<long, string> callback)
+        {
+            WebRequestor requestor = GetOrCreate();
+            string jsonQuery = requestor.DictionaryToHttpQuery(bodyData);
+            byte[] myData = Encoding.UTF8.GetBytes(jsonQuery);
+
+            using UnityWebRequest webRequest = UnityWebRequest.Put(url, myData);
+            webRequest.SetRequestHeader("Content-type", "application/json");
+            webRequest.timeout = TIMEOUT_SECONDS;
+
+            yield return webRequest.SendWebRequest();
+            callback?.Invoke(webRequest.responseCode, webRequest.downloadHandler.text);
+        }
+        #endregion
+
+
+        #region Delete Request
+        public static void Delete(string url, Dictionary<string, string> parameters, Action<long, string> callback)
+        {
+            LoadingScreen.Show();
+            WebRequestor requestor = GetOrCreate();
+            string query = requestor.DictionaryToHttpQuery(parameters);
+            requestor.StartCoroutine(requestor.Co_Delete($"{URL.DB_SERVER}{url}{query}", (responseCode, result) =>
+            {
+                LoadingScreen.Hide();
+                callback?.Invoke(responseCode, result);
+            }));
+        }
+
+        private IEnumerator Co_Delete(string url, Action<long, string> callback)
+        {
+            using UnityWebRequest webRequest = UnityWebRequest.Delete(url);
+            webRequest.timeout = TIMEOUT_SECONDS;
+
+            yield return webRequest.SendWebRequest();
+            callback?.Invoke(webRequest.responseCode, webRequest.downloadHandler.text);
+        }
+        #endregion
+
+
+        #region Image
+        public static void Image(string fileName, Action<bool, Sprite> callback)
+        {
+            WebRequestor requestor = GetOrCreate();
+            requestor.StartCoroutine(requestor.Co_Image(fileName, (success, result) =>
+            {
+                callback?.Invoke(success, result);
+            }));
+        }
+
+        private IEnumerator Co_Image(string url, Action<bool, Sprite> callback)
+        {
+            string[] urlArray = url.Split('\\');
+            string fileName = urlArray[urlArray.Length - 1];
+
             string savePath = Path.Combine(Application.persistentDataPath, fileName);
             if (File.Exists(savePath))
             {
@@ -100,6 +217,7 @@ public class WebRequestor : MonoBehaviour
                     Sprite sprite = Sprite.Create(texture, rect, new Vector2(0.5f, 0.5f));
 
                     callback?.Invoke(true, sprite);
+                    //Debug.Log($"Loaded image in cache data. name : {fileName}");
                     yield break;
                 }
                 catch (Exception e)
@@ -107,56 +225,66 @@ public class WebRequestor : MonoBehaviour
                     Debug.LogWarning($"Failed to save data at {Path.Combine(Application.persistentDataPath, fileName)}\nError :\n{e.Message}\n{e.StackTrace}");
                 }
             }
+
+            using UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(url);
+            webRequest.timeout = TIMEOUT_SECONDS;
+
+            yield return webRequest.SendWebRequest();
+
+            switch (webRequest.result)
+            {
+                case UnityWebRequest.Result.ConnectionError:
+                    callback?.Invoke(false, null);
+                    break;
+                case UnityWebRequest.Result.DataProcessingError:
+                    callback?.Invoke(false, null);
+                    break;
+                case UnityWebRequest.Result.ProtocolError:
+                    callback?.Invoke(false, null);
+                    break;
+                case UnityWebRequest.Result.Success:
+                    Texture texture = ((DownloadHandlerTexture)webRequest.downloadHandler).texture;
+                    Rect rect = new Rect(0, 0, texture.width, texture.height);
+                    Sprite sprite = Sprite.Create((Texture2D)texture, rect, new Vector2(0.5f, 0.5f));
+
+                    byte[] imageBytes = webRequest.downloadHandler.data;
+                    SaveImage(fileName, imageBytes);
+
+                    //Debug.Log($"Loaded image in file server. name : {fileName}");
+
+                    callback?.Invoke(true, sprite);
+                    break;
+            }
         }
 
-        using UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(uri);
-        webRequest.timeout = TIMEOUT_SECONDS;
-
-        yield return webRequest.SendWebRequest();
-
-        switch (webRequest.result)
+        private void SaveImage(string fileName, byte[] data)
         {
-            case UnityWebRequest.Result.ConnectionError:
-                callback?.Invoke(false, null);
-                break;
-            case UnityWebRequest.Result.DataProcessingError:
-                callback?.Invoke(false, null);
-                break;
-            case UnityWebRequest.Result.ProtocolError:
-                callback?.Invoke(false, null);
-                break;
-            case UnityWebRequest.Result.Success:
-
-                // Get Sprite
-                Texture2D texture = ((DownloadHandlerTexture)webRequest.downloadHandler).texture;
-                Sprite sprite = CreateSpriteWithTexture(texture);
-
-                // Save Image
-                byte[] imageBytes = webRequest.downloadHandler.data;
-                SaveImage(fileName, imageBytes);
-
-                callback?.Invoke(true, sprite);
-                break;
+            try
+            {
+                File.WriteAllBytes(Path.Combine(Application.persistentDataPath, fileName), data);
+                //Debug.Log($"Image cached successfully downaloaded and saved at {Path.Combine(Application.persistentDataPath, fileName)}");
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"Failed to save data at {Path.Combine(Application.persistentDataPath, fileName)}\nError :\n{e.Message}\n{e.StackTrace}");
+            }
         }
-    }
+        #endregion
 
-    private Sprite CreateSpriteWithTexture(Texture2D texture)
-    {
-        Rect rect = new Rect(0, 0, texture.width, texture.height);
-        Sprite sprite = Sprite.Create(texture, rect, new Vector2(0.5f, 0.5f));
-
-        return sprite;
-    }
-
-    private void SaveImage(string fileName, byte[] data)
-    {
-        try
+        private string DictionaryToHttpQuery(Dictionary<string, string> dictionary)
         {
-            File.WriteAllBytes(Path.Combine(Application.persistentDataPath, fileName), data);
-        }
-        catch (Exception e)
-        {
-            Debug.LogWarning($"Failed to save data at {Path.Combine(Application.persistentDataPath, fileName)}\nError :\n{e.Message}\n{e.StackTrace}");
+            string result = "?";
+            List<KeyValuePair<string, string>> dictionaryList = dictionary.ToList();
+            for (int i = 0; i < dictionaryList.Count; i++)
+            {
+                KeyValuePair<string, string> current = dictionaryList[i];
+                result += $"{current.Key}={current.Value}";
+
+                if (i != dictionaryList.Count - 1)
+                    result += "&";
+            }
+
+            return result;
         }
     }
 }

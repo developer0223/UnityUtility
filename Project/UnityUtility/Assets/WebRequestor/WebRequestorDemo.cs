@@ -1,22 +1,32 @@
-// System
-using System;
-using System.Collections;
-using System.Collections.Generic;
-
-// Unity
-using UnityEngine;
-using UnityEngine.UI;
-
-// Project
-// Alias
-
-public class WebRequestorDemo : MonoBehaviour
+namespace developer0223.WebRequestor
 {
-    private void Start()
+    // System
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+
+    // Unity
+    using UnityEngine;
+    using UnityEngine.UI;
+
+    // Project
+    // Alias
+
+    public class WebRequestorDemo : MonoBehaviour
     {
-        WebRequestor.GetRequest(WebRequestor.URL.Google, (success, result) =>
+        private void Start()
         {
-            Debug.Log($"result : {(success ? "success" : "fail")} | result : {result}");
-        });
+            WebRequestor.Get("http://3.34.139.34:8080/CP/table", new Dictionary<string, string>(), (resultcode, result) =>
+            {
+                if (resultcode == ResultCode.SUCCESS)
+                {
+                    Debug.Log($"result : success | result : {result}");
+                }
+                else
+                {
+                    Debug.Log($"result : fail | result : {result}");
+                }
+            });
+        }
     }
 }
