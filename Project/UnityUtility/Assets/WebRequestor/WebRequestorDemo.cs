@@ -10,6 +10,7 @@ namespace developer0223.WebRequestor
     using UnityEngine.UI;
 
     // Project
+    using LitJson;
     // Alias
 
     public class WebRequestorDemo : MonoBehaviour
@@ -21,6 +22,10 @@ namespace developer0223.WebRequestor
                 if (resultcode == ResultCode.SUCCESS)
                 {
                     Debug.Log($"result : success | result : {result}");
+
+                    JsonData data = JsonMapper.ToObject(result);
+                    int intData = data["data"].NullOrDefaultInt();
+                    string strData = data["data"].NullOrStringEmpty();
                 }
                 else
                 {
