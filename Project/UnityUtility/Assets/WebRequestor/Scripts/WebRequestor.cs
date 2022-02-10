@@ -27,8 +27,6 @@ namespace developer0223.WebRequestor
             public static readonly string FILE_SERVER = "";
         }
 
-
-
         public static WebRequestor GetOrCreate()
         {
             if (instance == null)
@@ -40,6 +38,7 @@ namespace developer0223.WebRequestor
             return instance;
         }
 
+
         #region Get Request
         /// <summary>
         /// Send http get request and get response.
@@ -49,12 +48,10 @@ namespace developer0223.WebRequestor
         /// <param name="callback">Callback method.</param>
         public static void Get(string url, Dictionary<string, string> parameters, Action<long, string> callback)
         {
-            LoadingScreen.Show();
             WebRequestor requestor = GetOrCreate();
             string query = requestor.DictionaryToHttpQuery(parameters);
             requestor.StartCoroutine(requestor.Co_Get($"{URL.DB_SERVER}{url}{query}", (responseCode, result) =>
             {
-                LoadingScreen.Hide();
                 callback?.Invoke(responseCode, result);
             }));
         }
@@ -79,11 +76,9 @@ namespace developer0223.WebRequestor
         /// <param name="callback">Target server url.</param>
         public static void Post(string url, WWWForm formData, Action<long, string> callback)
         {
-            LoadingScreen.Show();
             WebRequestor requestor = GetOrCreate();
             requestor.StartCoroutine(requestor.Co_Post($"{URL.DB_SERVER}{url}", formData, (responseCode, result) =>
             {
-                LoadingScreen.Hide();
                 callback?.Invoke(responseCode, result);
             }));
         }
@@ -96,12 +91,10 @@ namespace developer0223.WebRequestor
         /// <param name="callback">Target server url.</param>
         public static void Post(string url, Dictionary<string, string> queryData, WWWForm formData, Action<long, string> callback)
         {
-            LoadingScreen.Show();
             WebRequestor requestor = GetOrCreate();
             string query = requestor.DictionaryToHttpQuery(queryData);
-            requestor.StartCoroutine(requestor.Co_Post($"{URL.DB_SERVER}{url}{queryData}", formData, (responseCode, result) =>
+            requestor.StartCoroutine(requestor.Co_Post($"{URL.DB_SERVER}{url}{query}", formData, (responseCode, result) =>
             {
-                LoadingScreen.Hide();
                 callback?.Invoke(responseCode, result);
             }));
         }
@@ -126,23 +119,19 @@ namespace developer0223.WebRequestor
         /// <param name="callback"></param>
         public static void Put(string url, Dictionary<string, string> bodyData, Action<long, string> callback)
         {
-            LoadingScreen.Show();
             WebRequestor requestor = GetOrCreate();
             requestor.StartCoroutine(requestor.Co_Put($"{URL.DB_SERVER}{url}", bodyData, (responseCode, result) =>
             {
-                LoadingScreen.Hide();
                 callback?.Invoke(responseCode, result);
             }));
         }
 
         public static void Put(string url, Dictionary<string, string> parameters, Dictionary<string, string> bodyData, Action<long, string> callback)
         {
-            LoadingScreen.Show();
             WebRequestor requestor = GetOrCreate();
             string query = requestor.DictionaryToHttpQuery(parameters);
             requestor.StartCoroutine(requestor.Co_Put($"{URL.DB_SERVER}{url}{query}", bodyData, (responseCode, result) =>
             {
-                LoadingScreen.Hide();
                 callback?.Invoke(responseCode, result);
             }));
         }
@@ -166,12 +155,10 @@ namespace developer0223.WebRequestor
         #region Delete Request
         public static void Delete(string url, Dictionary<string, string> parameters, Action<long, string> callback)
         {
-            LoadingScreen.Show();
             WebRequestor requestor = GetOrCreate();
             string query = requestor.DictionaryToHttpQuery(parameters);
             requestor.StartCoroutine(requestor.Co_Delete($"{URL.DB_SERVER}{url}{query}", (responseCode, result) =>
             {
-                LoadingScreen.Hide();
                 callback?.Invoke(responseCode, result);
             }));
         }
