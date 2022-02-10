@@ -39,22 +39,25 @@ public static partial class UnityExtension
 
     public static string WithColor(this string content, string color)
     {
-        return $"<color={color}>{content}</color>";
+        return $"<color=" + color + ">" + content + "</color>";
+        //return $"<color={color}>{content}</color>";
     }
 
     public static string WithSize(this string content, int size)
     {
-        return $"<size={size}>{content}</size>";
+        return $"<size=" + size + ">" + content + "</size>";
+        //return $"<size={size}>{content}</size>";
     }
 
     public static string WithBold(this string content)
     {
-        return $"<b>{content}</b>";
+        return $"<b>" + content + "</b>";
+        //return $"<b>{content}</b>";
     }
 
     public static string WithItalic(this string content)
     {
         return $"<i>{content}</i>";
+        //return $"<i>{content}</i>";
     }
-    
 }
