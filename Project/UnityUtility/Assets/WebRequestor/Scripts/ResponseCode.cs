@@ -1,6 +1,6 @@
 namespace developer0223.WebRequestor
 {
-    public class ResultCode
+    public class ResponseCode
     {
         public static readonly int SUCCESS = 200;
         public static readonly int BAD_REQUEST = 400;

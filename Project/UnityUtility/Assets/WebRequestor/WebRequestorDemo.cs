@@ -19,7 +19,7 @@ namespace developer0223.WebRequestor
         {
             WebRequestor.Get("http://3.34.139.34:8080/CP/table", new Dictionary<string, string>(), (resultcode, result) =>
             {
-                if (resultcode == ResultCode.SUCCESS)
+                if (resultcode == ResponseCode.SUCCESS)
                 {
                     Debug.Log($"result : success | result : {result}");
 
