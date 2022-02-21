@@ -74,6 +74,21 @@ namespace developer0223.WebRequestor
         /// <param name="url">Target server url.</param>
         /// <param name="formData">Body data.</param>
         /// <param name="callback">Target server url.</param>
+        public static void Post(string url, string bodyJson, Action<long, string> callback)
+        {
+            WebRequestor requestor = GetOrCreate();
+            requestor.StartCoroutine(requestor.Co_Post($"{URL.DB_SERVER}{url}", bodyJson, (responseCode, result) =>
+                {
+                    callback?.Invoke(responseCode, result);
+                }));
+        }
+
+        /// <summary>
+        /// Send http post request and get response.
+        /// </summary>
+        /// <param name="url">Target server url.</param>
+        /// <param name="formData">Body data.</param>
+        /// <param name="callback">Target server url.</param>
         public static void Post(string url, WWWForm formData, Action<long, string> callback)
         {
             WebRequestor requestor = GetOrCreate();
@@ -97,6 +112,20 @@ namespace developer0223.WebRequestor
             {
                 callback?.Invoke(responseCode, result);
             }));
+        }
+
+        private IEnumerator Co_Post(string url, string bodyJson, Action<long, string> callback)
+        {
+            UnityWebRequest webRequest = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST); // "POST"
+            byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(bodyJson);
+
+            webRequest.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
+            webRequest.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
+            webRequest.SetRequestHeader("Content-Type", "application/json;");
+
+            yield return webRequest.SendWebRequest();
+
+            callback?.Invoke(webRequest.responseCode, webRequest.downloadHandler.text);
         }
 
         private IEnumerator Co_Post(string url, WWWForm formData, Action<long, string> callback)
