@@ -31,19 +31,19 @@ public class ScreenHelper : MonoBehaviour
 
     public static void FadeIn(float duration, Action callback = null)
     {
-        FadeAlpha(1.0f, 0.0f, duration, () => { callback?.Invoke(); });
+        FadeAlpha(1.0f, 0.0f, duration, callback);
     }
 
     public static void FadeOut(float duration, Action callback = null)
     {
-        FadeAlpha(0.0f, 1.0f, duration, () => { callback?.Invoke(); });
+        FadeAlpha(0.0f, 1.0f, duration, callback);
     }
 
     private static void FadeAlpha(float startAlpha, float targetAlpha, float duration, Action callback = null)
     {
         ScreenHelper helper = GetOrCreate();
         helper.StopAllCoroutines();
-        helper.StartCoroutine(helper.Co_FadeAlpha(startAlpha, targetAlpha, duration, () => { callback?.Invoke(); }));
+        helper.StartCoroutine(helper.Co_FadeAlpha(startAlpha, targetAlpha, duration, callback));
     }
 
     private IEnumerator Co_FadeAlpha(float startAlpha, float targetAlpha, float duration, Action callback = null)
