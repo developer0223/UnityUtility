@@ -16,26 +16,26 @@ namespace developer0223.WebRequestor
 
     public class WebRequestor : MonoBehaviour
     {
-        public static int TIMEOUT_SECONDS = 5;
+        private static int TIMEOUT_SECONDS = 10;
 
-        private static WebRequestor instance = null;
+        private static WebRequestor Instance = null;
 
-        public class URL
+        internal class URL
         {
-            public static readonly string GOOGLE = "http://wwww.google.com";
-            public static readonly string DB_SERVER = "";
-            public static readonly string FILE_SERVER = "";
+            internal static readonly string GOOGLE = "http://wwww.google.com";
+            internal static readonly string DB_SERVER = "";
+            internal static readonly string FILE_SERVER = "";
         }
 
         public static WebRequestor GetOrCreate()
         {
-            if (instance == null)
+            if (Instance == null)
             {
                 GameObject _gameObject = new GameObject(nameof(WebRequestor));
-                instance = _gameObject.AddComponent<WebRequestor>();
+                Instance = _gameObject.AddComponent<WebRequestor>();
             }
 
-            return instance;
+            return Instance;
         }
 
 

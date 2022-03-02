@@ -5,7 +5,7 @@ using LitJson;
 
 public static class LitJsonExtensions
 {
-    public static string NullToEmpty(this string value)
+    internal static string NullToEmpty(this string value)
     {
         if (value == null)
             value = string.Empty;
@@ -13,16 +13,16 @@ public static class LitJsonExtensions
         return value;
     }
 
-    public static string NullOrStringEmpty(this JsonData value)
+    internal static string NullOrStringEmpty(this JsonData value, string defaultValue = "")
     {
-        string result = string.Empty;
+        string result = defaultValue;
         if (value != null)
             result = value.ToString();
 
         return result;
     }
 
-    public static int NullOrDefaultInt(this JsonData value, int defaultValue = 1)
+    internal static int NullOrDefaultInt(this JsonData value, int defaultValue = 1)
     {
         int result = defaultValue;
         if (value != null)
@@ -31,7 +31,7 @@ public static class LitJsonExtensions
         return result;
     }
 
-    public static bool NullOrBool(this JsonData value, bool defaultValue = false)
+    internal static bool NullOrBool(this JsonData value, bool defaultValue = false)
     {
         bool result = defaultValue;
         if (value != null)
