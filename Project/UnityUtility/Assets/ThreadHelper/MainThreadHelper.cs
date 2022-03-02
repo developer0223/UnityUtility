@@ -14,8 +14,10 @@ public class MainThreadHelper : MonoBehaviour
 {
     // public static class instance
     private static MainThreadHelper Instance = null;
+    private static object instanceLock = new object();
 
     private Queue<Action> mainThreadTask = new Queue<Action>();
+
 
     /// <summary>
     /// Get or create MainThreadHelper instance.
@@ -26,8 +28,14 @@ public class MainThreadHelper : MonoBehaviour
     {
         if (Instance == null)
         {
-            GameObject _gameObject = new GameObject(nameof(MainThreadHelper));
-            Instance = _gameObject.AddComponent<MainThreadHelper>();
+            lock (instanceLock)
+            {
+                if (Instance == null)
+                {
+                    GameObject _gameObject = new GameObject(nameof(MainThreadHelper));
+                    Instance = _gameObject.AddComponent<MainThreadHelper>();
+                }
+            }
         }
 
         return Instance;
