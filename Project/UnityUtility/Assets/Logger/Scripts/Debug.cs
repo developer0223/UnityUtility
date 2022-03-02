@@ -7,7 +7,7 @@ internal static class Debug
 //#endif
 
     [Conditional(ENABLE_LOG)]
-    public static void Log(object content, bool writeToFile = true)
+    public static void Log(object content, bool writeToFile = false)
     {
         UnityEngine.Debug.Log(content);
         if (writeToFile)
@@ -15,7 +15,7 @@ internal static class Debug
     }
 
     [Conditional(ENABLE_LOG)]
-    public static void LogWarning(object content, bool writeToFile = true)
+    public static void LogWarning(object content, bool writeToFile = false)
     {
         UnityEngine.Debug.LogWarning(content);
         if (writeToFile)
@@ -23,7 +23,7 @@ internal static class Debug
     }
 
     [Conditional(ENABLE_LOG)]
-    public static void LogError(object content, bool writeToFile = true)
+    public static void LogError(object content, bool writeToFile = false)
     {
         UnityEngine.Debug.LogError(content);
         if (writeToFile)
