@@ -1,17 +1,13 @@
-// System
-using System;
-using System.Collections;
-using System.Collections.Generic;
-
 // Unity
 using UnityEngine;
 using UnityEngine.UI;
 
-// Project
-// Alias
-
 public class LoggerSample : MonoBehaviour
 {
+    /// <summary>
+    /// You must add [ENABLE_LOG] at Project Settings - Other Settings - Script Compilation - Scripting Define Symbols to enable editor and file logging.
+    /// </summary>
+
     public InputField inputField_message = null;
     public Button button_append = null;
 
@@ -30,7 +26,7 @@ public class LoggerSample : MonoBehaviour
         string message = inputField_message.text;
         if (!IsNullOrEmpty(message))
         {
-            Logger.Log(message);
+            Debug.Log(message);
         }
     }
 

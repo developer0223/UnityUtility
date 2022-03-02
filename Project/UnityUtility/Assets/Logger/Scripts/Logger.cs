@@ -13,68 +13,52 @@ using UnityEngine.UI;
 
 public class Logger
 {
-    private static string FileName = "log.txt";
+    internal static readonly string LogDefaultFileName = "log_";
 
-    private static string Path {
-        get {
-            return System.IO.Path.Combine(Application.persistentDataPath, FileName);
+    internal static void Append(string content, LogLevel logLevel = LogLevel.Debug)
+    {
+        string[] lines = content.Split('\n');
+        foreach (string singleLine in lines)
+            AppendSingleLine(singleLine.Trim(), logLevel);
+    }
+
+    internal static void Clear()
+    {
+        if (File.Exists(GetOrCreateFilePath()))
+        {
+            File.Delete(GetOrCreateFilePath());
         }
     }
 
-    public static void Log(object message)
+    private static void AppendSingleLine(string content, LogLevel logLevel)
     {
-        Debug.Log($"Log appended. message : {message}, Path : {Path}");
-        //if (!File.Exists(Path))
-        //{
-        //    File.CreateText(Path);
-        //}
-
-        File.AppendAllText(Path, $"{GetDateTimeString()} | {message}\n");
+        string filePath = GetOrCreateFilePath();
+        int lineCount = File.ReadAllLines(filePath).Length;
+        File.AppendAllText(filePath, $"{lineCount}    {GetCurrentTime()} :: {logLevel} :: {content}\n");
     }
 
-    public static void Clear()
+    private static string GetOrCreateFilePath()
     {
-        if (File.Exists(Path))
+        //string directoryPath = Path.Combine(Environment.CurrentDirectory, "Log");
+        string directoryPath = Path.Combine(Application.persistentDataPath, "Log");
+        string fileName = $"{LogDefaultFileName}{DateTime.Now.ToString("yyyy-MM-dd")}.txt";
+        string filePath = Path.Combine(directoryPath, fileName);
+
+        if (!Directory.Exists(directoryPath))
         {
-            File.Delete(Path);
+            Directory.CreateDirectory(directoryPath);
         }
+
+        if (!File.Exists(filePath))
+        {
+            File.AppendAllText(filePath, $"Log file Created :: {GetCurrentTime()}\n");
+        }
+
+        return filePath;
     }
 
-    public static void Copy(string directory)
+    private static string GetCurrentTime()
     {
-        if (IsAccessable(Path))
-        {
-            if (!Directory.Exists(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
-            File.Copy(Path, directory);
-        }
-    }
-
-    private static bool IsAccessable(string filePath)
-    {
-        FileStream fileStream = null;
-        try
-        {
-            fileStream = new FileStream(Path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
-        }
-        catch (IOException)
-        {
-            return false;
-        }
-        finally
-        {
-            if (fileStream != null)
-                fileStream.Close();
-        }
-
-        return true;
-    }
-
-    private static string GetDateTimeString()
-    {
-        return DateTime.Now.ToString("yyyy/MM/dd HH:mm.ff");
+        return DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
     }
 }
