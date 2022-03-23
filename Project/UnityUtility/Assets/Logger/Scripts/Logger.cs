@@ -15,11 +15,19 @@ public class Logger
 {
     internal static readonly string LogDefaultFileName = "log_";
 
-    internal static void Append(string content, LogLevel logLevel = LogLevel.Debug)
+    internal static void Append(string tag, string content, LogLevel logLevel = LogLevel.Debug)
     {
         string[] lines = content.Split('\n');
-        foreach (string singleLine in lines)
-            AppendSingleLine(singleLine.Trim(), logLevel);
+        string emptyTag = GetEmptyString(tag.Length);
+        for (int i = 0; i < lines.Length; i++)
+        {
+            if (i == 0)
+            {
+                AppendSingleLine(tag, lines[i].Trim(), logLevel);
+            }
+
+            AppendSingleLine(emptyTag, lines[i].Trim(), logLevel);
+        }
     }
 
     internal static void Clear()
@@ -30,7 +38,7 @@ public class Logger
         }
     }
 
-    private static void AppendSingleLine(string content, LogLevel logLevel)
+    private static void AppendSingleLine(string tag, string content, LogLevel logLevel)
     {
         string filePath = GetOrCreateFilePath();
         int lineCount = File.ReadAllLines(filePath).Length;
@@ -60,5 +68,16 @@ public class Logger
     private static string GetCurrentTime()
     {
         return DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+    }
+
+    private static string GetEmptyString(int length)
+    {
+        string result = string.Empty;
+        for (int i = 0; i < length; i++)
+        {
+            result += " ";
+        }
+
+        return result;
     }
 }
