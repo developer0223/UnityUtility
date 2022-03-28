@@ -12,7 +12,15 @@ internal static class Debug
     {
         UnityEngine.Debug.Log(content);
         if (writeToFile)
-            Logger.Append(content.ToString());
+            Logger.Append(DFAULT_TAG, content.ToString(), LogLevel.Debug);
+    }
+
+    [Conditional(ENABLE_LOG)]
+    public static void Log(string tag, object content, bool writeToFile = false)
+    {
+        UnityEngine.Debug.Log(content);
+        if (writeToFile)
+            Logger.Append(tag, content.ToString(), LogLevel.Debug);
     }
 
     [Conditional(ENABLE_LOG)]
@@ -20,7 +28,15 @@ internal static class Debug
     {
         UnityEngine.Debug.LogWarning(content);
         if (writeToFile)
-            Logger.Append(content.ToString(), LogLevel.Warning);
+            Logger.Append(DFAULT_TAG, content.ToString(), LogLevel.Warning);
+    }
+
+    [Conditional(ENABLE_LOG)]
+    public static void LogWarning(string tag, object content, bool writeToFile = false)
+    {
+        UnityEngine.Debug.LogWarning(content);
+        if (writeToFile)
+            Logger.Append(tag, content.ToString(), LogLevel.Warning);
     }
 
     [Conditional(ENABLE_LOG)]
@@ -28,6 +44,14 @@ internal static class Debug
     {
         UnityEngine.Debug.LogError(content);
         if (writeToFile)
-            Logger.Append(content.ToString(), LogLevel.Error);
+            Logger.Append(DFAULT_TAG, content.ToString(), LogLevel.Error);
+    }
+
+    [Conditional(ENABLE_LOG)]
+    public static void LogError(string tag, object content, bool writeToFile = false)
+    {
+        UnityEngine.Debug.LogError(content);
+        if (writeToFile)
+            Logger.Append(tag, content.ToString(), LogLevel.Error);
     }
 }

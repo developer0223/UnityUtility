@@ -42,7 +42,7 @@ public class Logger
     {
         string filePath = GetOrCreateFilePath();
         int lineCount = File.ReadAllLines(filePath).Length;
-        File.AppendAllText(filePath, $"{lineCount}    {GetCurrentTime()} :: {logLevel} :: {content}\n");
+        File.AppendAllText(filePath, $"{lineCount}     {tag}    {GetCurrentTime()} :: {logLevel} :: {content}\n");
     }
 
     private static string GetOrCreateFilePath()
