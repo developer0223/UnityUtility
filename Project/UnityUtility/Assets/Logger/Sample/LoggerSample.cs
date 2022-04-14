@@ -16,6 +16,15 @@ public class LoggerSample : MonoBehaviour
         SetListeners();
     }
 
+    private System.Collections.IEnumerator Co_Test()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(UnityEngine.Random.Range(1.0f, 5.0f));
+            Debug.Log($"{System.DateTime.Now:yyyy-MM-dd HH:mm.ss}", true);
+        }
+    }
+
     private void SetListeners()
     {
         button_append.onClick.AddListener(AppendLog);
@@ -26,7 +35,7 @@ public class LoggerSample : MonoBehaviour
         string message = inputField_message.text;
         if (!IsNullOrEmpty(message))
         {
-            Debug.Log(message);
+            Debug.Log(message, true);
         }
     }
 

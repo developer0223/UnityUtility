@@ -18,6 +18,7 @@ public class Logger
             if (i == 0)
             {
                 AppendSingleLine(tag, lines[i].Trim(), logLevel);
+                return;
             }
 
             AppendSingleLine(emptyTag, lines[i].Trim(), logLevel);
@@ -36,12 +37,16 @@ public class Logger
     {
         string filePath = GetOrCreateFilePath();
         int lineCount = File.ReadAllLines(filePath).Length;
-        File.AppendAllText(filePath, $"{lineCount}     {tag}    {GetCurrentTime()} :: {logLevel} :: {content}\n");
+        FileStream fileStream = new FileStream(filePath, FileMode.Append);
+        StreamWriter writer = new StreamWriter(fileStream);
+        writer.WriteLine($"{lineCount}     {tag}    {GetCurrentTime()} :: {logLevel} :: {content}");
+        writer.Flush();
+        writer.Dispose();
+        fileStream.Dispose();
     }
 
     private static string GetOrCreateFilePath()
     {
-        //string directoryPath = Path.Combine(Environment.CurrentDirectory, "Log");
         string directoryPath = Path.Combine(Application.persistentDataPath, "Log");
         string fileName = $"{LogDefaultFileName}{DateTime.Now.ToString("yyyy-MM-dd")}.txt";
         string filePath = Path.Combine(directoryPath, fileName);
@@ -53,7 +58,12 @@ public class Logger
 
         if (!File.Exists(filePath))
         {
-            File.AppendAllText(filePath, $"Log file Created :: {GetCurrentTime()}\n");
+            FileStream fileStream = new FileStream(filePath, FileMode.Append);
+            StreamWriter writer = new StreamWriter(fileStream);
+            writer.WriteLine($"Log file Created :: {GetCurrentTime()}");
+            writer.Flush();
+            writer.Dispose();
+            fileStream.Dispose();
         }
 
         return filePath;
