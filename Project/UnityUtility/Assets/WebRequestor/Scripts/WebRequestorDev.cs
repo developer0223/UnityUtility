@@ -28,7 +28,6 @@ namespace developer0223.WebRequestor
             {
                 GameObject _gameObject = new GameObject(nameof(WebRequestorDev));
                 Instance = _gameObject.AddComponent<WebRequestorDev>();
-
             }
 
             return Instance;
