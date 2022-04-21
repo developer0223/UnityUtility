@@ -7,7 +7,7 @@ namespace developer0223.WebRequestor
     public class ResponseCode
     {
         // 200 ~
-        internal const long SUCCESS = 200;
+        internal const long OK = 200;
         internal const long CREATED = 201;
         internal const long ACCEPTED = 202;
         
