@@ -42,7 +42,7 @@ public class MainThreadHelper : MonoBehaviour
     }
 
     /// <summary>
-    /// Add actino to queue
+    /// Add action to queue
     /// </summary>
     /// <param name="action"></param>
     public static void AddAction(Action action)
