@@ -73,6 +73,8 @@ public class WebRequestorDevDemo : MonoBehaviour
             {
                 JsonReader reader = new JsonReader(result);
                 JsonData data = JsonMapper.ToObject(reader);
+
+                Debug.Log($"MY DATA : {data["data"][0][0]["Tables_in_tkd2"].StringValue()}");
             }
         });
     }
