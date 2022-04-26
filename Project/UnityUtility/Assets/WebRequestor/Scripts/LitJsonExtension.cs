@@ -16,7 +16,7 @@ public static class LitJsonExtensions
         return value;
     }
 
-    internal static string GetStringValue(this JsonData value, string defaultValue = "")
+    internal static string StringValue(this JsonData value, string defaultValue = "")
     {
         string result = defaultValue;
         if (value != null)
@@ -25,7 +25,7 @@ public static class LitJsonExtensions
         return result;
     }
 
-    internal static int GetIntValue(this JsonData value, int defaultValue = 1)
+    internal static int IntegerValue(this JsonData value, int defaultValue = 1)
     {
         int result = defaultValue;
         if (value != null)
@@ -34,7 +34,7 @@ public static class LitJsonExtensions
         return result;
     }
 
-    internal static bool GetBoolValue(this JsonData value, bool defaultValue = false)
+    internal static bool BoolValue(this JsonData value, bool defaultValue = false)
     {
         bool result = defaultValue;
         if (value != null)
