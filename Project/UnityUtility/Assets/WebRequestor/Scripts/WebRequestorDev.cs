@@ -39,10 +39,19 @@ namespace developer0223.WebRequestor
         private string refreshToken = string.Empty;
 
         public static string GetJwtAccessToken() => GetOrCreate().accessToken;
-        public static void SetJwtAccessToken(string token) => GetOrCreate().accessToken = token;
+        public static void SetJwtAccessToken(string token)
+        {
+            Debug.Log($"SetJwtAccessToken. New token : {token}");
+            GetOrCreate().accessToken = token;
+            AddDefaultRequestHeaders("Authorization", "Bearer " + token);
+        }
 
         private static string GetJwtRefreshToken() => GetOrCreate().refreshToken;
-        private static void SetJwtRefreshToken(string token) => GetOrCreate().refreshToken = token;
+        public static void SetJwtRefreshToken(string token)
+        {
+            Debug.Log($"SetJwtRefreshToken. New token : {token}");
+            GetOrCreate().refreshToken = token;
+        }
         #endregion
 
         #region Settings
@@ -50,11 +59,39 @@ namespace developer0223.WebRequestor
         private string BASE_URL = string.Empty;
         private Dictionary<string, string> DefaultRequestHeaders = new Dictionary<string, string>();
 
-        public static void SetTimeoutSeconds(int seconds) => GetOrCreate().TIMEOUT_SECONDS = seconds;
-        public static void SetBaseURL(string url) => GetOrCreate().BASE_URL = url;
-        public static void SetDefaultRequestHeaders(Dictionary<string, string> headers) => GetOrCreate().DefaultRequestHeaders = headers;
-        public static void AddDefaultRequestHeaders(string key, string value) => GetOrCreate().DefaultRequestHeaders.Add(key, value);
-        public static void RemoveDefaultRequestHeaders(string key) => GetOrCreate().DefaultRequestHeaders.Remove(key);
+        public static void SetTimeoutSeconds(int seconds)
+        {
+            WebRequestorDev requestor = GetOrCreate();
+            requestor.TIMEOUT_SECONDS = seconds;
+        }
+
+        public static void SetBaseURL(string url)
+        {
+            WebRequestorDev requestor = GetOrCreate();
+            requestor.BASE_URL = url;
+        }
+
+        public static void SetDefaultRequestHeaders(Dictionary<string, string> headers)
+        {
+            WebRequestorDev requestor = GetOrCreate();
+            requestor.DefaultRequestHeaders = headers;
+        }
+
+        public static void AddDefaultRequestHeaders(string key, string value)
+        {
+            WebRequestorDev requestor = GetOrCreate();
+            RemoveDefaultRequestHeaders(key);
+            requestor.DefaultRequestHeaders.Add(key, value);
+        }
+
+        public static void RemoveDefaultRequestHeaders(string key)
+        {
+            WebRequestorDev requestor = GetOrCreate();
+            if (requestor.DefaultRequestHeaders.ContainsKey(key))
+            {
+                requestor.DefaultRequestHeaders.Remove(key);
+            }
+        }
         #endregion
 
         #region Consts
@@ -76,6 +113,7 @@ namespace developer0223.WebRequestor
         private IEnumerator Co_Get(string url, Action<long, string> callback)
         {
             using UnityWebRequest request = new UnityWebRequest(url, METHOD_GET).SetHeaders(DefaultRequestHeaders);
+            request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
             request.timeout = TIMEOUT_SECONDS;
 
             yield return request.SendWebRequest();
@@ -116,11 +154,14 @@ namespace developer0223.WebRequestor
 
         private IEnumerator Co_Post(string url, string bodyJson, Action<long, string> callback)
         {
+            Debug.Log($"Co_Post. url : {url}");
+            Debug.Log($"Co_Post. url : {bodyJson}");
+
             using UnityWebRequest request = new UnityWebRequest(url, METHOD_POST).SetHeaders(DefaultRequestHeaders);
             byte[] jsonBytes = new UTF8Encoding().GetBytes(bodyJson);
 
-            request.uploadHandler = new UploadHandlerRaw(jsonBytes);
-            request.downloadHandler = new DownloadHandlerBuffer();
+            request.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonBytes);
+            request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
             request.timeout = TIMEOUT_SECONDS;
 
             yield return request.SendWebRequest();
