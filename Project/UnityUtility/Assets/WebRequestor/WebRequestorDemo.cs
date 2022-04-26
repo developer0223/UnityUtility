@@ -24,8 +24,8 @@ namespace developer0223.WebRequestor
                     Debug.Log($"result : success | result : {result}");
 
                     JsonData data = JsonMapper.ToObject(result);
-                    int intData = data["data"].GetIntValue();
-                    string strData = data["data"].GetStringValue();
+                    int intData = data["data"].IntegerValue();
+                    string strData = data["data"].StringValue();
                 }
                 else
                 {
