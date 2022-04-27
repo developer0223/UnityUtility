@@ -12,22 +12,17 @@ namespace developer0223.WebRequestor
     using UnityEngine;
     using UnityEngine.Networking;
 
+    // Project
+    using LitJson;
+
     // Alias
 
     public class WebRequestor : MonoBehaviour
     {
-        private static int TIMEOUT_SECONDS = 10;
-
+        #region Local Singleton
         private static WebRequestor Instance = null;
 
-        internal class URL
-        {
-            internal static readonly string GOOGLE = "http://wwww.google.com";
-            internal static readonly string DB_SERVER = "";
-            internal static readonly string FILE_SERVER = "";
-        }
-
-        public static WebRequestor GetOrCreate()
+        private static WebRequestor GetOrCreate()
         {
             if (Instance == null)
             {
@@ -37,257 +32,284 @@ namespace developer0223.WebRequestor
 
             return Instance;
         }
+        #endregion
 
+        #region JWT (Json-Web-Token)
+        private string accessToken = string.Empty;
+        private string refreshToken = string.Empty;
 
-        #region Get Request
-        /// <summary>
-        /// Send http get request and get response.
-        /// </summary>
-        /// <param name="url">Target server url.</param>
-        /// <param name="parameters">Query parameters.</param>
-        /// <param name="callback">Callback method.</param>
-        public static void Get(string url, Dictionary<string, string> parameters, Action<long, string> callback)
+        public static string GetJwtAccessToken() => GetOrCreate().accessToken;
+        public static void SetJwtAccessToken(string token)
+        {
+            Debug.Log($"SetJwtAccessToken. New token : {token}");
+            GetOrCreate().accessToken = token;
+            AddDefaultRequestHeaders("Access_token", token);
+            //AddDefaultRequestHeaders("Authorization", "Bearer " + token);
+        }
+
+        private static string GetJwtRefreshToken() => GetOrCreate().refreshToken;
+        public static void SetJwtRefreshToken(string token)
+        {
+            Debug.Log($"SetJwtRefreshToken. New token : {token}");
+            GetOrCreate().refreshToken = token;
+        }
+        #endregion
+
+        #region Settings
+        private int TIMEOUT_SECONDS = 10;
+        private string BASE_URL = string.Empty;
+        private Dictionary<string, string> DefaultRequestHeaders = new Dictionary<string, string>();
+
+        public static void SetTimeoutSeconds(int seconds)
         {
             WebRequestor requestor = GetOrCreate();
-            string query = requestor.DictionaryToHttpQuery(parameters);
-            requestor.StartCoroutine(requestor.Co_Get($"{URL.DB_SERVER}{url}{query}", (responseCode, result) =>
+            requestor.TIMEOUT_SECONDS = seconds;
+        }
+
+        public static void SetBaseURL(string url)
+        {
+            WebRequestor requestor = GetOrCreate();
+            requestor.BASE_URL = url;
+        }
+
+        public static void SetDefaultRequestHeaders(Dictionary<string, string> headers)
+        {
+            WebRequestor requestor = GetOrCreate();
+            requestor.DefaultRequestHeaders = headers;
+        }
+
+        public static void AddDefaultRequestHeaders(string key, string value)
+        {
+            WebRequestor requestor = GetOrCreate();
+            RemoveDefaultRequestHeaders(key);
+            requestor.DefaultRequestHeaders.Add(key, value);
+        }
+
+        public static void RemoveDefaultRequestHeaders(string key)
+        {
+            WebRequestor requestor = GetOrCreate();
+            if (requestor.DefaultRequestHeaders.ContainsKey(key))
             {
-                callback?.Invoke(responseCode, result);
-            }));
+                requestor.DefaultRequestHeaders.Remove(key);
+            }
+        }
+        #endregion
+
+        #region Consts
+        private static readonly string METHOD_GET = "GET";
+        private static readonly string METHOD_POST = "POST";
+        private static readonly string METHOD_PUT = "PUT";
+        private static readonly string METHOD_DELETE = "DELETE";
+        #endregion
+
+        #region Get Request
+        public static void Get(string url, Dictionary<string, string> queryData, Action<long, string> callback)
+        {
+            WebRequestor requestor = GetOrCreate();
+            string query = DictionaryToHttpQuery(queryData);
+            string generatedUrl = CombineUrlWithQuery(url, query);
+            requestor.StartCoroutine(requestor.Co_Get(generatedUrl, callback));
         }
 
         private IEnumerator Co_Get(string url, Action<long, string> callback)
         {
-            using UnityWebRequest webRequest = UnityWebRequest.Get(url);
-            webRequest.timeout = TIMEOUT_SECONDS;
+            using UnityWebRequest request = new UnityWebRequest(url, METHOD_GET).SetHeaders(DefaultRequestHeaders);
+            request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
+            request.timeout = TIMEOUT_SECONDS;
 
-            yield return webRequest.SendWebRequest();
-            callback?.Invoke(webRequest.responseCode, webRequest.downloadHandler.text);
+            yield return request.SendWebRequest();
+            callback?.Invoke(request.responseCode, request.downloadHandler.text);
         }
         #endregion
 
-
         #region Post Request
-        /// <summary>
-        /// Send http post request and get response.
-        /// </summary>
-        /// <param name="url">Target server url.</param>
-        /// <param name="formData">Body data.</param>
-        /// <param name="callback">Target server url.</param>
         public static void Post(string url, string bodyJson, Action<long, string> callback)
         {
             WebRequestor requestor = GetOrCreate();
-            requestor.StartCoroutine(requestor.Co_Post($"{URL.DB_SERVER}{url}", bodyJson, (responseCode, result) =>
-                {
-                    callback?.Invoke(responseCode, result);
-                }));
+            requestor.StartCoroutine(requestor.Co_Post(url, bodyJson, callback));
         }
 
-        /// <summary>
-        /// Send http post request and get response.
-        /// </summary>
-        /// <param name="url">Target server url.</param>
-        /// <param name="formData">Body data.</param>
-        /// <param name="callback">Target server url.</param>
-        public static void Post(string url, WWWForm formData, Action<long, string> callback)
+        public static void Post(string url, Dictionary<string, string> queryData, string bodyJson, Action<long, string> callback)
         {
             WebRequestor requestor = GetOrCreate();
-            requestor.StartCoroutine(requestor.Co_Post($"{URL.DB_SERVER}{url}", formData, (responseCode, result) =>
-            {
-                callback?.Invoke(responseCode, result);
-            }));
+            string query = DictionaryToHttpQuery(queryData);
+            string generatedUrl = CombineUrlWithQuery(url, query);
+            requestor.StartCoroutine(requestor.Co_Post(generatedUrl, bodyJson, callback));
         }
 
-        /// <summary>
-        /// Send http post request and get response.
-        /// </summary>
-        /// <param name="url">Target server url.</param>
-        /// <param name="formData">Body data.</param>
-        /// <param name="callback">Target server url.</param>
-        public static void Post(string url, Dictionary<string, string> queryData, WWWForm formData, Action<long, string> callback)
+        public static void Post(string url, object unformattedJson, Action<long, string> callback)
         {
             WebRequestor requestor = GetOrCreate();
-            string query = requestor.DictionaryToHttpQuery(queryData);
-            requestor.StartCoroutine(requestor.Co_Post($"{URL.DB_SERVER}{url}{query}", formData, (responseCode, result) =>
-            {
-                callback?.Invoke(responseCode, result);
-            }));
+            string bodyJson = JsonMapper.ToJson(unformattedJson);
+            requestor.StartCoroutine(requestor.Co_Post(url, bodyJson, callback));
+        }
+
+        public static void Post(string url, Dictionary<string, string> queryData, object unformattedJson, Action<long, string> callback)
+        {
+            WebRequestor requestor = GetOrCreate();
+            string query = DictionaryToHttpQuery(queryData);
+            string generatedUrl = CombineUrlWithQuery(url, query);
+            string bodyJson = JsonMapper.ToJson(unformattedJson);
+            requestor.StartCoroutine(requestor.Co_Post(generatedUrl, bodyJson, callback));
         }
 
         private IEnumerator Co_Post(string url, string bodyJson, Action<long, string> callback)
         {
-            UnityWebRequest webRequest = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST); // "POST"
-            byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(bodyJson);
+            Debug.Log($"Co_Post. url : {url}");
+            Debug.Log($"Co_Post. bodyJson : {bodyJson}");
 
-            webRequest.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
-            webRequest.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
-            webRequest.SetRequestHeader("Content-Type", "application/json;");
+            using UnityWebRequest request = new UnityWebRequest(url, METHOD_POST).SetHeaders(DefaultRequestHeaders);
+            byte[] jsonBytes = new UTF8Encoding().GetBytes(bodyJson);
 
-            yield return webRequest.SendWebRequest();
+            request.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonBytes);
+            request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
+            request.timeout = TIMEOUT_SECONDS;
 
-            callback?.Invoke(webRequest.responseCode, webRequest.downloadHandler.text);
-        }
-
-        private IEnumerator Co_Post(string url, WWWForm formData, Action<long, string> callback)
-        {
-            using UnityWebRequest webRequest = UnityWebRequest.Post(url, formData);
-            webRequest.timeout = TIMEOUT_SECONDS;
-
-            yield return webRequest.SendWebRequest();
-            callback?.Invoke(webRequest.responseCode, webRequest.downloadHandler.text);
+            yield return request.SendWebRequest();
+            callback?.Invoke(request.responseCode, request.downloadHandler.text);
         }
         #endregion
-
 
         #region Put Request
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="bodyData"></param>
-        /// <param name="callback"></param>
-        public static void Put(string url, Dictionary<string, string> bodyData, Action<long, string> callback)
+        public static void Put(string url, string bodyJson, Action<long, string> callback)
         {
             WebRequestor requestor = GetOrCreate();
-            requestor.StartCoroutine(requestor.Co_Put($"{URL.DB_SERVER}{url}", bodyData, (responseCode, result) =>
-            {
-                callback?.Invoke(responseCode, result);
-            }));
+            requestor.StartCoroutine(requestor.Co_Put(url, bodyJson, callback));
         }
 
-        public static void Put(string url, Dictionary<string, string> parameters, Dictionary<string, string> bodyData, Action<long, string> callback)
+        public static void Put(string url, Dictionary<string, string> queryData, string bodyJson, Action<long, string> callback)
         {
             WebRequestor requestor = GetOrCreate();
-            string query = requestor.DictionaryToHttpQuery(parameters);
-            requestor.StartCoroutine(requestor.Co_Put($"{URL.DB_SERVER}{url}{query}", bodyData, (responseCode, result) =>
-            {
-                callback?.Invoke(responseCode, result);
-            }));
+            string query = DictionaryToHttpQuery(queryData);
+            string generatedUrl = CombineUrlWithQuery(url, query);
+            requestor.StartCoroutine(requestor.Co_Put(generatedUrl, bodyJson, callback));
         }
 
-        private IEnumerator Co_Put(string url, Dictionary<string, string> bodyData, Action<long, string> callback)
+        public static void Put(string url, object unformattedJson, Action<long, string> callback)
         {
             WebRequestor requestor = GetOrCreate();
-            string jsonQuery = requestor.DictionaryToHttpQuery(bodyData);
-            byte[] myData = Encoding.UTF8.GetBytes(jsonQuery);
+            string bodyJson = JsonMapper.ToJson(unformattedJson);
+            requestor.StartCoroutine(requestor.Co_Put(url, bodyJson, callback));
+        }
 
-            using UnityWebRequest webRequest = UnityWebRequest.Put(url, myData);
-            webRequest.SetRequestHeader("Content-type", "application/json");
-            webRequest.timeout = TIMEOUT_SECONDS;
+        public static void Put(string url, Dictionary<string, string> queryData, object unformattedJson, Action<long, string> callback)
+        {
+            WebRequestor requestor = GetOrCreate();
+            string query = DictionaryToHttpQuery(queryData);
+            string generatedUrl = CombineUrlWithQuery(url, query);
+            string bodyJson = JsonMapper.ToJson(unformattedJson);
+            requestor.StartCoroutine(requestor.Co_Put(generatedUrl, bodyJson, callback));
+        }
 
-            yield return webRequest.SendWebRequest();
-            callback?.Invoke(webRequest.responseCode, webRequest.downloadHandler.text);
+        private IEnumerator Co_Put(string url, string bodyJson, Action<long, string> callback)
+        {
+            using UnityWebRequest request = new UnityWebRequest(url, METHOD_PUT).SetHeaders(DefaultRequestHeaders);
+            byte[] jsonBytes = new UTF8Encoding().GetBytes(bodyJson);
+
+            request.uploadHandler = new UploadHandlerRaw(jsonBytes);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.timeout = TIMEOUT_SECONDS;
+
+            yield return request.SendWebRequest();
+            callback?.Invoke(request.responseCode, request.downloadHandler.text);
         }
         #endregion
-
 
         #region Delete Request
-        public static void Delete(string url, Dictionary<string, string> parameters, Action<long, string> callback)
+        public static void Delete(string url, string bodyJson, Action<long, string> callback)
         {
             WebRequestor requestor = GetOrCreate();
-            string query = requestor.DictionaryToHttpQuery(parameters);
-            requestor.StartCoroutine(requestor.Co_Delete($"{URL.DB_SERVER}{url}{query}", (responseCode, result) =>
-            {
-                callback?.Invoke(responseCode, result);
-            }));
+            requestor.StartCoroutine(requestor.Co_Delete(url, bodyJson, callback));
         }
 
-        private IEnumerator Co_Delete(string url, Action<long, string> callback)
+        public static void Delete(string url, Dictionary<string, string> queryData, string bodyJson, Action<long, string> callback)
         {
-            using UnityWebRequest webRequest = UnityWebRequest.Delete(url);
-            webRequest.timeout = TIMEOUT_SECONDS;
+            WebRequestor requestor = GetOrCreate();
+            string query = DictionaryToHttpQuery(queryData);
+            string generatedUrl = CombineUrlWithQuery(url, query);
+            requestor.StartCoroutine(requestor.Co_Delete(generatedUrl, bodyJson, callback));
+        }
 
-            yield return webRequest.SendWebRequest();
-            callback?.Invoke(webRequest.responseCode, webRequest.downloadHandler.text);
+        public static void Delete(string url, object unformattedJson, Action<long, string> callback)
+        {
+            WebRequestor requestor = GetOrCreate();
+            string bodyJson = JsonMapper.ToJson(unformattedJson);
+            requestor.StartCoroutine(requestor.Co_Delete(url, bodyJson, callback));
+        }
+
+        public static void Delete(string url, Dictionary<string, string> queryData, object unformattedJson, Action<long, string> callback)
+        {
+            WebRequestor requestor = GetOrCreate();
+            string query = DictionaryToHttpQuery(queryData);
+            string generatedUrl = CombineUrlWithQuery(url, query);
+            string bodyJson = JsonMapper.ToJson(unformattedJson);
+            requestor.StartCoroutine(requestor.Co_Delete(generatedUrl, bodyJson, callback));
+        }
+
+        private IEnumerator Co_Delete(string url, string bodyJson, Action<long, string> callback)
+        {
+            using UnityWebRequest request = new UnityWebRequest(url, METHOD_DELETE).SetHeaders(DefaultRequestHeaders);
+            byte[] jsonBytes = new UTF8Encoding().GetBytes(bodyJson);
+
+            request.uploadHandler = new UploadHandlerRaw(jsonBytes);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.timeout = TIMEOUT_SECONDS;
+
+            yield return request.SendWebRequest();
+            callback?.Invoke(request.responseCode, request.downloadHandler.text);
         }
         #endregion
 
-
         #region Image
-        public static void Image(string fileName, Action<bool, Sprite> callback)
+        public static void Image(string url, string fileName, Action<bool, Sprite> callback)
         {
             WebRequestor requestor = GetOrCreate();
-            requestor.StartCoroutine(requestor.Co_Image(fileName, (success, result) =>
-            {
-                callback?.Invoke(success, result);
-            }));
+            requestor.StartCoroutine(requestor.Co_Image(url, fileName, callback));
         }
 
-        private IEnumerator Co_Image(string url, Action<bool, Sprite> callback)
+        private IEnumerator Co_Image(string url, string fileName, Action<bool, Sprite> callback)
         {
-            string[] urlArray = url.Split('\\');
-            string fileName = urlArray[urlArray.Length - 1];
-
             string savePath = Path.Combine(Application.persistentDataPath, fileName);
             if (File.Exists(savePath))
             {
-                try
-                {
-                    byte[] imageBytes = File.ReadAllBytes(savePath);
+                byte[] imageBytes = File.ReadAllBytes(savePath);
 
-                    Texture2D texture = new Texture2D(0, 0);
-                    texture.LoadImage(imageBytes);
-                    texture.Apply();
+                Texture2D texture = new Texture2D(0, 0);
+                texture.LoadImage(imageBytes);
+                texture.Apply();
 
-                    Rect rect = new Rect(0, 0, texture.width, texture.height);
-                    Sprite sprite = Sprite.Create(texture, rect, new Vector2(0.5f, 0.5f));
+                Rect rect = new Rect(0, 0, texture.width, texture.height);
+                Sprite sprite = Sprite.Create(texture, rect, new Vector2(0.5f, 0.5f));
 
-                    callback?.Invoke(true, sprite);
-                    //Debug.Log($"Loaded image in cache data. name : {fileName}");
-                    yield break;
-                }
-                catch (Exception e)
-                {
-                    Debug.LogWarning($"Failed to save data at {Path.Combine(Application.persistentDataPath, fileName)}\nError :\n{e.Message}\n{e.StackTrace}");
-                }
+                callback?.Invoke(true, sprite);
+                yield break;
             }
 
-            using UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(url);
-            webRequest.timeout = TIMEOUT_SECONDS;
+            using UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
+            request.timeout = TIMEOUT_SECONDS;
+            request.downloadHandler = new DownloadHandlerTexture();
 
-            yield return webRequest.SendWebRequest();
+            yield return request.SendWebRequest();
 
-            switch (webRequest.result)
+            if (request.responseCode == ResponseCode.OK)
             {
-                case UnityWebRequest.Result.ConnectionError:
-                    callback?.Invoke(false, null);
-                    break;
-                case UnityWebRequest.Result.DataProcessingError:
-                    callback?.Invoke(false, null);
-                    break;
-                case UnityWebRequest.Result.ProtocolError:
-                    callback?.Invoke(false, null);
-                    break;
-                case UnityWebRequest.Result.Success:
-                    Texture texture = ((DownloadHandlerTexture)webRequest.downloadHandler).texture;
-                    Rect rect = new Rect(0, 0, texture.width, texture.height);
-                    Sprite sprite = Sprite.Create((Texture2D)texture, rect, new Vector2(0.5f, 0.5f));
+                Texture texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+                Rect rect = new Rect(0, 0, texture.width, texture.height);
+                Sprite sprite = Sprite.Create((Texture2D)texture, rect, new Vector2(0.5f, 0.5f));
 
-                    byte[] imageBytes = webRequest.downloadHandler.data;
-                    SaveImage(fileName, imageBytes);
+                byte[] imageBytes = request.downloadHandler.data;
+                File.WriteAllBytes(Path.Combine(Application.persistentDataPath, fileName), imageBytes);
 
-                    //Debug.Log($"Loaded image in file server. name : {fileName}");
-
-                    callback?.Invoke(true, sprite);
-                    break;
+                callback?.Invoke(true, sprite);
+                yield break;
             }
-        }
 
-        private void SaveImage(string fileName, byte[] data)
-        {
-            try
-            {
-                File.WriteAllBytes(Path.Combine(Application.persistentDataPath, fileName), data);
-                //Debug.Log($"Image cached successfully downaloaded and saved at {Path.Combine(Application.persistentDataPath, fileName)}");
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning($"Failed to save data at {Path.Combine(Application.persistentDataPath, fileName)}\nError :\n{e.Message}\n{e.StackTrace}");
-            }
+            callback?.Invoke(false, null);
         }
         #endregion
 
-        private string DictionaryToHttpQuery(Dictionary<string, string> dictionary)
+        #region Utility
+        private static string DictionaryToHttpQuery(Dictionary<string, string> dictionary)
         {
             string result = "?";
             List<KeyValuePair<string, string>> dictionaryList = dictionary.ToList();
@@ -302,5 +324,11 @@ namespace developer0223.WebRequestor
 
             return result;
         }
+
+        private static string CombineUrlWithQuery(string url, string queryData)
+        {
+            return $"{url}{queryData}";
+        }
+        #endregion
     }
 }
