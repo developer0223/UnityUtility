@@ -49,7 +49,7 @@ public class WebRequestorDemo : MonoBehaviour
         string bodyData = JsonMapper.ToJson(loginReq);
         Debug.Log($"bodyData : {bodyData}");
 
-        WebRequestor.Post("http://192.168.1.107:8081/api/login", bodyData, (responseCode, result) =>
+        WebRequestor.Post("http://192.168.1.250:8081/api/login", bodyData, (responseCode, result) =>
         {
             Debug.Log($"Login Post. responseCode: {responseCode}");
             Debug.Log($"Login Post. result: {result}");
@@ -83,7 +83,7 @@ public class WebRequestorDemo : MonoBehaviour
         };
 
         AppendDebugText($"academy: {academy}");
-        WebRequestor.Get("http://192.168.1.107:8081/api/dashboard", dashboardReq, (responseCode, result) =>
+        WebRequestor.Get("http://192.168.1.250:8081/api/dashboard", dashboardReq, (responseCode, result) =>
         {
             Debug.Log($"DashBoard. responseCode:\n{responseCode}");
             Debug.Log($"DashBoard. result:\n{result}");
