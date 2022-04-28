@@ -7,7 +7,7 @@ namespace developer0223.WebRequestor
     using System.Text;
     using System.Collections;
     using System.Collections.Generic;
-
+    
     // Unity
     using UnityEngine;
     using UnityEngine.Networking;
@@ -155,9 +155,6 @@ namespace developer0223.WebRequestor
 
         private IEnumerator Co_Post(string url, string bodyJson, Action<long, string> callback)
         {
-            Debug.Log($"Co_Post. url : {url}");
-            Debug.Log($"Co_Post. bodyJson : {bodyJson}");
-
             using UnityWebRequest request = new UnityWebRequest(url, METHOD_POST).SetHeaders(DefaultRequestHeaders);
             byte[] jsonBytes = new UTF8Encoding().GetBytes(bodyJson);
 
