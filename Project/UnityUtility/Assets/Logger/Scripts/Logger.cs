@@ -39,7 +39,7 @@ public class Logger
         int lineCount = File.ReadAllLines(filePath).Length;
         FileStream fileStream = new FileStream(filePath, FileMode.Append);
         StreamWriter writer = new StreamWriter(fileStream);
-        writer.WriteLine($"{lineCount}     {tag}    {GetCurrentTime()} :: {logLevel} :: {content}");
+        writer.WriteLine($"{lineCount:D5}     {tag}    {GetCurrentTime()} :: {logLevel} :: {content}");
         writer.Flush();
         writer.Dispose();
         fileStream.Dispose();
