@@ -18,7 +18,6 @@ public class Logger
             if (i == 0)
             {
                 AppendSingleLine(tag, lines[i].Trim(), logLevel);
-                return;
             }
 
             AppendSingleLine(emptyTag, lines[i].Trim(), logLevel);
