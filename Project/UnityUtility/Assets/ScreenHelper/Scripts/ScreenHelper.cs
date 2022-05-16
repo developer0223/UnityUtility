@@ -51,6 +51,7 @@ public class ScreenHelper : MonoBehaviour
         Color startColor = img_background.color;
         startColor.a = startAlpha;
         img_background.color = startColor;
+        img_background.raycastTarget = true;
 
         float start = img_background.color.a;
         float end = targetAlpha;
@@ -68,6 +69,7 @@ public class ScreenHelper : MonoBehaviour
         Color lastColor = img_background.color;
         lastColor.a = targetAlpha;
         img_background.color = lastColor;
+        img_background.raycastTarget = false;
 
         callback?.Invoke();
     }
