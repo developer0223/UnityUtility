@@ -15,9 +15,6 @@ public class AlertDialog : MonoBehaviour
 {
     private static readonly string Path = "UI/Dialog/AlertDialog";
 
-    [Header("Wrapper")]
-    public Image img_wrapper = null;
-
     [Header("Content")]
     public RectTransform rect_tr_content_area = null;
 
@@ -30,10 +27,12 @@ public class AlertDialog : MonoBehaviour
     public Text txt_content = null;
 
     [Header("Button (Cancel)")]
+    private UnityAction okButtonCallback = null;
     public Button btn_cancel = null;
     public Text txt_button_cancel = null;
 
     [Header("Button (OK)")]
+    private UnityAction cancelButtonCallback = null;
     public Button btn_ok = null;
     public Text txt_button_ok = null;
 
@@ -47,6 +46,44 @@ public class AlertDialog : MonoBehaviour
         _script.GetComponent<Canvas>().SetOnTop();
 
         return _script;
+    }
+
+    private void Awake()
+    {
+        AddListeners();
+    }
+
+    private void AddListeners()
+    {
+        btn_ok.onClick.AddListener(OnOkButtonClicked);
+        btn_cancel.onClick.AddListener(OnCancelButtonClicked);
+    }
+
+    private void OnOkButtonClicked()
+    {
+        okButtonCallback?.Invoke();
+        Destroy(this.gameObject);
+    }
+
+    private void OnCancelButtonClicked()
+    {
+        cancelButtonCallback?.Invoke();
+        Destroy(this.gameObject);
+    }
+
+    private void OnEnable()
+    {
+        BackScreenWrapper.Show();
+    }
+
+    private void OnDestroy()
+    {
+        int length = FindObjectsOfType<AlertDialog>().Length;
+        Debug.Log($"OnDestroy length: {length}");
+        if (length == 0)
+        {
+            BackScreenWrapper.Hide();
+        }
     }
 
     public class Builder
@@ -66,28 +103,6 @@ public class AlertDialog : MonoBehaviour
 
             this.dialog = dialog;
         }
-
-        #region Wrapper Area
-        public Builder SetWrapperImageEnabled(bool enable)
-        {
-            dialog.img_wrapper.gameObject.SetActive(enable);
-            return this;
-        }
-
-        public Builder SetWrapperImageColor(Color newColor)
-        {
-            dialog.img_wrapper.color = newColor;
-            return this;
-        }
-
-        public Builder SetWrapperImageAlpha(float alpha01)
-        {
-            Color newColor = dialog.img_wrapper.color;
-            newColor.a = alpha01;
-            dialog.img_wrapper.color = newColor;
-            return this;
-        }
-        #endregion
 
         #region Title Area
         public Builder SetTitleBarBackgroundColor(Color newColor)
@@ -157,8 +172,7 @@ public class AlertDialog : MonoBehaviour
         public Builder SetOkButton(string text, UnityAction callback)
         {
             dialog.txt_button_ok.text = text;
-            dialog.btn_ok.onClick.RemoveAllListeners();
-            dialog.btn_ok.onClick.AddListener(callback);
+            dialog.okButtonCallback = callback;
             return this;
         }
 
@@ -193,8 +207,7 @@ public class AlertDialog : MonoBehaviour
             SetCancelButtonEnabled();
             dialog.txt_button_cancel.gameObject.SetActive(true);
             dialog.txt_button_cancel.text = text;
-            dialog.btn_cancel.onClick.RemoveAllListeners();
-            dialog.btn_cancel.onClick.AddListener(callback);
+            dialog.cancelButtonCallback = callback;
             return this;
         }
 
