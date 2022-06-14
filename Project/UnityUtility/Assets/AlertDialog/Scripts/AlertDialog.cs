@@ -41,6 +41,7 @@ public class AlertDialog : MonoBehaviour
         GameObject _prefab = Resources.Load(Path) as GameObject;
         _prefab = Instantiate(_prefab);
         _prefab.SetActive(false);
+        _prefab.name = nameof(AlertDialog);
 
         AlertDialog _script = _prefab.GetComponent<AlertDialog>();
         _script.GetComponent<Canvas>().SetOnTop();
@@ -78,12 +79,8 @@ public class AlertDialog : MonoBehaviour
 
     private void OnDestroy()
     {
-        int length = FindObjectsOfType<AlertDialog>().Length;
-        Debug.Log($"OnDestroy length: {length}");
-        if (length == 0)
-        {
+        if (FindObjectsOfType<AlertDialog>().Length == 0)
             BackScreenWrapper.Hide();
-        }
     }
 
     public class Builder

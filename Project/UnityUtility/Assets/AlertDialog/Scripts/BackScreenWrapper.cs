@@ -33,6 +33,7 @@ public class BackScreenWrapper : MonoBehaviour
         {
             GameObject _prefab = Resources.Load(Path) as GameObject;
             _prefab = Instantiate(_prefab);
+            _prefab.name = nameof(BackScreenWrapper);
 
             _script = _prefab.GetComponent<BackScreenWrapper>();
         }
