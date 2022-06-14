@@ -12,10 +12,18 @@ using UnityEngine.UI;
 
 public class AlertDialogSample : MonoBehaviour
 {
-    private void Start()
+    private int index = 0;
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+            SpawnAlertDialog(index++);
+    }
+
+    private void SpawnAlertDialog(int index)
     {
         AlertDialog.Builder builder = new AlertDialog.Builder()
-            .SetTitleText("Alert")
+            .SetTitleText($"Alert ({index})")
             .SetContentText("This is alertDialog test script.")
             .SetOkButton("Ok", () =>
             {
