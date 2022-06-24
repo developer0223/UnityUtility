@@ -3,6 +3,9 @@ namespace developer0223.WebRequestor
     // Project
     using LitJson;
 
+    /// <summary>
+    /// Extension methods for LitJson library.
+    /// </summary>
     public static class LitJsonExtensions
     {
         internal static string NullToEmpty(this string value)
@@ -13,7 +16,7 @@ namespace developer0223.WebRequestor
             return value;
         }
 
-        internal static string StringValue(this JsonData value, string defaultValue = "")
+        internal static string GetStringValue(this JsonData value, string defaultValue = "")
         {
             string result = defaultValue;
             if (value != null)
@@ -22,7 +25,7 @@ namespace developer0223.WebRequestor
             return result;
         }
 
-        internal static int IntegerValue(this JsonData value, int defaultValue = 1)
+        internal static int GetIntegerValue(this JsonData value, int defaultValue = 1)
         {
             int result = defaultValue;
             if (value != null)
@@ -31,7 +34,7 @@ namespace developer0223.WebRequestor
             return result;
         }
 
-        internal static bool BoolValue(this JsonData value, bool defaultValue = false)
+        internal static bool GetBoolValue(this JsonData value, bool defaultValue = false)
         {
             bool result = defaultValue;
             if (value != null)

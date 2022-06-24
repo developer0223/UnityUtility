@@ -41,56 +41,57 @@ namespace developer0223.WebRequestor
         public static string GetJwtAccessToken() => GetOrCreate().accessToken;
         public static void SetJwtAccessToken(string token)
         {
-            Debug.Log($"SetJwtAccessToken. New token : {token}");
             GetOrCreate().accessToken = token;
-            AddDefaultRequestHeaders("Access_token", token);
             //AddDefaultRequestHeaders("Authorization", "Bearer " + token);
+            AddDefaultRequestHeaders("Authorization", token);
         }
 
         private static string GetJwtRefreshToken() => GetOrCreate().refreshToken;
         public static void SetJwtRefreshToken(string token)
         {
-            Debug.Log($"SetJwtRefreshToken. New token : {token}");
             GetOrCreate().refreshToken = token;
         }
         #endregion
 
         #region Settings
-        private int TIMEOUT_SECONDS = 10;
-        private string BASE_URL = string.Empty;
-        private Dictionary<string, string> DefaultRequestHeaders = new Dictionary<string, string>();
+        private int timeoutSeconds = 10;
+        private string baseUrl = string.Empty;
+        private Dictionary<string, string> defaultRequestHeaders = new Dictionary<string, string>();
 
         public static void SetTimeoutSeconds(int seconds)
         {
             WebRequestor requestor = GetOrCreate();
-            requestor.TIMEOUT_SECONDS = seconds;
+            requestor.timeoutSeconds = seconds;
         }
 
         public static void SetBaseURL(string url)
         {
             WebRequestor requestor = GetOrCreate();
-            requestor.BASE_URL = url;
+            requestor.baseUrl = url;
         }
 
         public static void SetDefaultRequestHeaders(Dictionary<string, string> headers)
         {
+            if (headers == null)
+                headers = new Dictionary<string, string>();
+
             WebRequestor requestor = GetOrCreate();
-            requestor.DefaultRequestHeaders = headers;
+            requestor.defaultRequestHeaders = headers;
         }
 
         public static void AddDefaultRequestHeaders(string key, string value)
         {
             WebRequestor requestor = GetOrCreate();
             RemoveDefaultRequestHeaders(key);
-            requestor.DefaultRequestHeaders.Add(key, value);
+            requestor.defaultRequestHeaders.Add(key, value);
         }
 
         public static void RemoveDefaultRequestHeaders(string key)
         {
             WebRequestor requestor = GetOrCreate();
-            if (requestor.DefaultRequestHeaders.ContainsKey(key))
+            if (requestor.defaultRequestHeaders.ContainsKey(key))
             {
-                requestor.DefaultRequestHeaders.Remove(key);
+                requestor.defaultRequestHeaders.Remove(key);
             }
         }
         #endregion
@@ -113,9 +114,9 @@ namespace developer0223.WebRequestor
 
         private IEnumerator Co_Get(string url, Action<long, string> callback)
         {
-            using UnityWebRequest request = new UnityWebRequest(url, METHOD_GET).SetHeaders(DefaultRequestHeaders);
+            using UnityWebRequest request = new UnityWebRequest(url, METHOD_GET).SetHeaders(defaultRequestHeaders);
             request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
-            request.timeout = TIMEOUT_SECONDS;
+            request.timeout = timeoutSeconds;
 
             yield return request.SendWebRequest();
             callback?.Invoke(request.responseCode, request.downloadHandler.text);
@@ -141,7 +142,8 @@ namespace developer0223.WebRequestor
         {
             WebRequestor requestor = GetOrCreate();
             string bodyJson = JsonMapper.ToJson(unformattedJson);
-            requestor.StartCoroutine(requestor.Co_Post(url, bodyJson, callback));
+            string generatedUrl = CombineUrlWithQuery(url, string.Empty);
+            requestor.StartCoroutine(requestor.Co_Post(generatedUrl, bodyJson, callback));
         }
 
         public static void Post(string url, Dictionary<string, string> queryData, object unformattedJson, Action<long, string> callback)
@@ -155,12 +157,12 @@ namespace developer0223.WebRequestor
 
         private IEnumerator Co_Post(string url, string bodyJson, Action<long, string> callback)
         {
-            using UnityWebRequest request = new UnityWebRequest(url, METHOD_POST).SetHeaders(DefaultRequestHeaders);
+            using UnityWebRequest request = new UnityWebRequest(url, METHOD_POST).SetHeaders(defaultRequestHeaders);
             byte[] jsonBytes = new UTF8Encoding().GetBytes(bodyJson);
 
             request.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonBytes);
             request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
-            request.timeout = TIMEOUT_SECONDS;
+            request.timeout = timeoutSeconds;
 
             yield return request.SendWebRequest();
             callback?.Invoke(request.responseCode, request.downloadHandler.text);
@@ -171,7 +173,8 @@ namespace developer0223.WebRequestor
         public static void Put(string url, string bodyJson, Action<long, string> callback)
         {
             WebRequestor requestor = GetOrCreate();
-            requestor.StartCoroutine(requestor.Co_Put(url, bodyJson, callback));
+            string generatedUrl = CombineUrlWithQuery(url, string.Empty);
+            requestor.StartCoroutine(requestor.Co_Put(generatedUrl, bodyJson, callback));
         }
 
         public static void Put(string url, Dictionary<string, string> queryData, string bodyJson, Action<long, string> callback)
@@ -186,7 +189,8 @@ namespace developer0223.WebRequestor
         {
             WebRequestor requestor = GetOrCreate();
             string bodyJson = JsonMapper.ToJson(unformattedJson);
-            requestor.StartCoroutine(requestor.Co_Put(url, bodyJson, callback));
+            string generatedUrl = CombineUrlWithQuery(url, string.Empty);
+            requestor.StartCoroutine(requestor.Co_Put(generatedUrl, bodyJson, callback));
         }
 
         public static void Put(string url, Dictionary<string, string> queryData, object unformattedJson, Action<long, string> callback)
@@ -200,12 +204,12 @@ namespace developer0223.WebRequestor
 
         private IEnumerator Co_Put(string url, string bodyJson, Action<long, string> callback)
         {
-            using UnityWebRequest request = new UnityWebRequest(url, METHOD_PUT).SetHeaders(DefaultRequestHeaders);
+            using UnityWebRequest request = new UnityWebRequest(url, METHOD_PUT).SetHeaders(defaultRequestHeaders);
             byte[] jsonBytes = new UTF8Encoding().GetBytes(bodyJson);
 
             request.uploadHandler = new UploadHandlerRaw(jsonBytes);
             request.downloadHandler = new DownloadHandlerBuffer();
-            request.timeout = TIMEOUT_SECONDS;
+            request.timeout = timeoutSeconds;
 
             yield return request.SendWebRequest();
             callback?.Invoke(request.responseCode, request.downloadHandler.text);
@@ -216,7 +220,8 @@ namespace developer0223.WebRequestor
         public static void Delete(string url, string bodyJson, Action<long, string> callback)
         {
             WebRequestor requestor = GetOrCreate();
-            requestor.StartCoroutine(requestor.Co_Delete(url, bodyJson, callback));
+            string generatedUrl = CombineUrlWithQuery(url, string.Empty);
+            requestor.StartCoroutine(requestor.Co_Delete(generatedUrl, bodyJson, callback));
         }
 
         public static void Delete(string url, Dictionary<string, string> queryData, string bodyJson, Action<long, string> callback)
@@ -231,7 +236,8 @@ namespace developer0223.WebRequestor
         {
             WebRequestor requestor = GetOrCreate();
             string bodyJson = JsonMapper.ToJson(unformattedJson);
-            requestor.StartCoroutine(requestor.Co_Delete(url, bodyJson, callback));
+            string generatedUrl = CombineUrlWithQuery(url, string.Empty);
+            requestor.StartCoroutine(requestor.Co_Delete(generatedUrl, bodyJson, callback));
         }
 
         public static void Delete(string url, Dictionary<string, string> queryData, object unformattedJson, Action<long, string> callback)
@@ -245,12 +251,12 @@ namespace developer0223.WebRequestor
 
         private IEnumerator Co_Delete(string url, string bodyJson, Action<long, string> callback)
         {
-            using UnityWebRequest request = new UnityWebRequest(url, METHOD_DELETE).SetHeaders(DefaultRequestHeaders);
+            using UnityWebRequest request = new UnityWebRequest(url, METHOD_DELETE).SetHeaders(defaultRequestHeaders);
             byte[] jsonBytes = new UTF8Encoding().GetBytes(bodyJson);
 
             request.uploadHandler = new UploadHandlerRaw(jsonBytes);
             request.downloadHandler = new DownloadHandlerBuffer();
-            request.timeout = TIMEOUT_SECONDS;
+            request.timeout = timeoutSeconds;
 
             yield return request.SendWebRequest();
             callback?.Invoke(request.responseCode, request.downloadHandler.text);
@@ -261,7 +267,8 @@ namespace developer0223.WebRequestor
         public static void Image(string url, string fileName, Action<bool, Sprite> callback)
         {
             WebRequestor requestor = GetOrCreate();
-            requestor.StartCoroutine(requestor.Co_Image(url, fileName, callback));
+            string generatedUrl = CombineUrlWithQuery(url, string.Empty);
+            requestor.StartCoroutine(requestor.Co_Image(generatedUrl, fileName, callback));
         }
 
         private IEnumerator Co_Image(string url, string fileName, Action<bool, Sprite> callback)
@@ -283,7 +290,7 @@ namespace developer0223.WebRequestor
             }
 
             using UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
-            request.timeout = TIMEOUT_SECONDS;
+            request.timeout = timeoutSeconds;
             request.downloadHandler = new DownloadHandlerTexture();
 
             yield return request.SendWebRequest();
@@ -324,6 +331,13 @@ namespace developer0223.WebRequestor
 
         private static string CombineUrlWithQuery(string url, string queryData)
         {
+            if (!url.Contains("http"))
+            {
+                if (!url.StartsWith("/"))
+                    url = $"/{url}";
+
+                url = GetOrCreate().baseUrl + url;
+            }
             return $"{url}{queryData}";
         }
         #endregion

@@ -13,7 +13,7 @@ using LitJson;
 
 // Alias
 
-public class WebRequestorDemo : MonoBehaviour
+public class WebRequestorSample : MonoBehaviour
 {
     public Text txt_debug = null;
 
@@ -24,6 +24,8 @@ public class WebRequestorDemo : MonoBehaviour
         {
             { "Content-Type", "application/json" }
         });
+
+        WebRequestor.SetBaseURL("http://3-36-118-98:8080");
 
         string email = "abc@gmail.com";
         string password = "test";
@@ -57,9 +59,9 @@ public class WebRequestorDemo : MonoBehaviour
             {
                 JsonData data = JsonMapper.ToObject(result);
 
-                string accessToken = data["Access_token"].StringValue();
-                string refreshToken = data["Refresh_token"].StringValue();
-                string accessTokenExpireDatetime = data["Access_token_expire"].StringValue();
+                string accessToken = data["Access_token"].GetStringValue();
+                string refreshToken = data["Refresh_token"].GetStringValue();
+                string accessTokenExpireDatetime = data["Access_token_expire"].GetStringValue();
 
                 WebRequestor.SetJwtAccessToken(accessToken);
                 WebRequestor.SetJwtRefreshToken(refreshToken);
@@ -68,6 +70,7 @@ public class WebRequestorDemo : MonoBehaviour
                 AppendDebugText($"JwtRefreshToken: {refreshToken}");
                 AppendDebugText($"accessTokenExpireDatetime: {accessTokenExpireDatetime}");
 
+                // for test
                 DashBoard();
             }
         });

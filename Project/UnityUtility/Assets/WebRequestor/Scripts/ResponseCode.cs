@@ -20,6 +20,8 @@ namespace developer0223.WebRequestor
         internal const long METHOD_NOT_ALLOWED = 405;
         internal const long NOT_ACCEPTABLE = 406;
         internal const long REQUEST_TIMEOUT = 408;
+        internal const long CONFLICT = 409;
+        internal const long TOKEN_EXPIRED = 419;
 
         // 500 ~
         internal const long SERVER_ERROR = 500;
