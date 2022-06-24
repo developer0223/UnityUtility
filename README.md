@@ -32,4 +32,4 @@ Please contact me if this library has any problem. (developer0223@gmail.com)
 </br>
 
 # WebRequestor
-> [See Details & How to Use]()
+> [See Details & How to Use](https://github.com/developer0223/UnityUtility/blob/main/Project/UnityUtility/Assets/WebRequestor/Sample/WebRequestor.md "Detail of WebRequestor")
