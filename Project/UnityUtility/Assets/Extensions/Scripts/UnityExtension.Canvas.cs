@@ -1,16 +1,10 @@
-// System
-using System;
-using System.Collections;
-using System.Collections.Generic;
-
 // Unity
 using UnityEngine;
-using UnityEngine.UI;
 
-// Project
-// Alias
-
-public static partial class UnityExtension
+/// <summary>
+/// Extension class for UnityEngine.Canvas
+/// </summary>
+public static partial class UnityExtension 
 {
     public static void SetOnTop(this Canvas canvas)
     {

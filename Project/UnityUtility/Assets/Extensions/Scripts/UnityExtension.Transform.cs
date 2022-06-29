@@ -1,15 +1,9 @@
-// System
-using System;
-using System.Collections;
-using System.Collections.Generic;
-
 // Unity
 using UnityEngine;
-using UnityEngine.UI;
 
-// Project
-// Alias
-
+/// <summary>
+/// Extension class for UnityEngine.Transform
+/// </summary>
 public static partial class UnityExtension
 {
     public static void DestroyAllChildren(this Transform parent)

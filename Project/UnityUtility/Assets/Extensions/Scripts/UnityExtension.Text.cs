@@ -1,3 +1,7 @@
+/// <summary>
+/// Extension class for UnityEngine.UI.Text and System.String
+/// </summary>
+/// 
 public static partial class UnityExtension
 {
     public class TextColor
