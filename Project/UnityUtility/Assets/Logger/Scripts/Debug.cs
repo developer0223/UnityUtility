@@ -2,7 +2,7 @@ using System.Diagnostics;
 
 internal static class Debug
 {
-//#if LOG_ENABLED
+    //#if LOG_ENABLED
     public const string ENABLE_LOG = "ENABLE_LOG";
     //#endif
     public const string DFAULT_TAG = "developer0223";
