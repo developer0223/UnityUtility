@@ -7,7 +7,7 @@ namespace developer0223.WebRequestor
     using System.Text;
     using System.Collections;
     using System.Collections.Generic;
-    
+
     // Unity
     using UnityEngine;
     using UnityEngine.Networking;
@@ -20,7 +20,24 @@ namespace developer0223.WebRequestor
     public class WebRequestor : MonoBehaviour
     {
         #region Local Singleton
-        private static WebRequestor Instance = null;
+        private static WebRequestor instance = null;
+        private static WebRequestor Instance
+        {
+            get
+            {
+                return instance;
+            }
+            set
+            {
+                if (instance)
+                {
+                    Debug.LogError($"You are overriding {typeof(WebRequestor)}'s Instance. Destroying automatically previous instance's gameobject and reassign new value. But this should not be happen.");
+                    Destroy(instance.gameObject);
+                }
+
+                instance = value;
+            }
+        }
 
         private static WebRequestor GetOrCreate()
         {
@@ -31,6 +48,26 @@ namespace developer0223.WebRequestor
             }
 
             return Instance;
+        }
+        #endregion
+
+        #region Unity Callbacks
+        private void Awake()
+        {
+            if (Instance)
+            {
+                Debug.LogWarning($"{nameof(WebRequestor)} already exists. Destroy current one. ({gameObject.name})");
+                Destroy(this.gameObject);
+                return;
+            }
+
+            if (Instance == null)
+            {
+                Debug.LogWarning($"{nameof(WebRequestor)} instantiated but WebRequestor.Instance is null. Assign value automatically. ({gameObject.name})");
+                Instance = this;
+                DontDestroyOnLoad(gameObject);
+                return;
+            }
         }
         #endregion
 

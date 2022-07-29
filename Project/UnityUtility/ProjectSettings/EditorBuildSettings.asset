@@ -11,4 +11,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/ResolutionManager/Sample/ResolutionManagerSample2.unity
     guid: f0a0158a70c74f84fb29be91f7dfdaab
+  - enabled: 1
+    path: Assets/WebRequestor/Sample/WebRequestorMoveScene01.unity
+    guid: 52c89a3dabcef424a8d025d9beb8947c
+  - enabled: 1
+    path: Assets/WebRequestor/Sample/WebRequestorMoveScene02.unity
+    guid: f08add4aaf6e51040a023c82e21a1c5f
   m_configObjects: {}
