@@ -156,7 +156,7 @@ namespace developer0223.WebRequestor
             request.timeout = timeoutSeconds;
 
             yield return request.SendWebRequest();
-            callback?.Invoke(request.responseCode, request.downloadHandler.text);
+            callback?.Invoke(request.responseCode, request.downloadHandler.text.Trim());
         }
         #endregion
 
@@ -202,7 +202,7 @@ namespace developer0223.WebRequestor
             request.timeout = timeoutSeconds;
 
             yield return request.SendWebRequest();
-            callback?.Invoke(request.responseCode, request.downloadHandler.text);
+            callback?.Invoke(request.responseCode, request.downloadHandler.text.Trim());
         }
         #endregion
 
@@ -249,7 +249,7 @@ namespace developer0223.WebRequestor
             request.timeout = timeoutSeconds;
 
             yield return request.SendWebRequest();
-            callback?.Invoke(request.responseCode, request.downloadHandler.text);
+            callback?.Invoke(request.responseCode, request.downloadHandler.text.Trim());
         }
         #endregion
 
@@ -296,7 +296,7 @@ namespace developer0223.WebRequestor
             request.timeout = timeoutSeconds;
 
             yield return request.SendWebRequest();
-            callback?.Invoke(request.responseCode, request.downloadHandler.text);
+            callback?.Invoke(request.responseCode, request.downloadHandler.text.Trim());
         }
         #endregion
 
