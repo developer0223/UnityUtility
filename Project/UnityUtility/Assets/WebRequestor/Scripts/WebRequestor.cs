@@ -352,6 +352,9 @@ namespace developer0223.WebRequestor
         #region Utility
         private static string DictionaryToHttpQuery(Dictionary<string, string> dictionary)
         {
+            if (dictionary.Count == 0)
+                return string.Empty;
+
             string result = "?";
             List<KeyValuePair<string, string>> dictionaryList = dictionary.ToList();
             for (int i = 0; i < dictionaryList.Count; i++)
