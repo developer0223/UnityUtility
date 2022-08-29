@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/DataSaver/Samples/DataSaverSample.unity
-    guid: 58712aea222f86d45b20a38a9b494657
+    path: Assets/WindowsManager/WindowsManagerSample.unity
+    guid: 127cdc8880386b04188627b5a919b79f
   m_configObjects: {}
