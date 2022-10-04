@@ -52,8 +52,9 @@ public class AudioManager : MonoBehaviour
 
     /// <summary>
     /// 씬에 존재하는 SoundManager 반환. 없을 시 새로 생성
+    /// Return existing SoundManager instance. (Create new one if not exists)
     /// </summary>
-    /// <returns></returns>
+    /// <returns>New AudioManager class</returns>
     public static AudioManager GetOrCreate(AudioSource bgmSource = null, AudioSource effectSource = null)
     {
         AudioManager audioManager = FindObjectOfType<AudioManager>();
@@ -108,6 +109,7 @@ public class AudioManager : MonoBehaviour
 
     /// <summary>
     ///  초기설정
+    ///  Initial settings
     /// </summary>
     private void Initialize()
     {
@@ -117,6 +119,7 @@ public class AudioManager : MonoBehaviour
 
     /// <summary>
     /// 배경음악 클립 설정
+    /// Set bgm clip source
     /// </summary>
     /// <param name="clip"></param>
     public void SetBGMClip(AudioClip clip)
@@ -126,6 +129,7 @@ public class AudioManager : MonoBehaviour
 
     /// <summary>
     /// 배경음악 위치 조절
+    /// Set bgm clip time (position)
     /// </summary>
     /// <param name="time"></param>
     public void SetBGMTime(float time)
@@ -135,6 +139,7 @@ public class AudioManager : MonoBehaviour
 
     /// <summary>
     /// 배경음악 볼륨 조절
+    /// Set bgm clip volume
     /// </summary>
     /// <param name="volume"></param>
     public void SetBGMVolume(float volume)
@@ -144,6 +149,7 @@ public class AudioManager : MonoBehaviour
 
     /// <summary>
     /// 배경음악 재생
+    /// Play current bgm clip with repeat setting
     /// </summary>
     /// <param name="repeat">반복 여부</param>
     public void PlayBGM(bool repeat = true)
@@ -157,6 +163,7 @@ public class AudioManager : MonoBehaviour
 
     /// <summary>
     /// 배경음악 재생
+    /// Play new bgm clip with repeat setting
     /// </summary>
     /// <param name="clip">배경음악</param>
     /// <param name="repeat">반복 여부</param>
@@ -169,6 +176,7 @@ public class AudioManager : MonoBehaviour
 
     /// <summary>
     /// 배경음악 재생
+    /// Play new bgm clip with volume and repeat setting
     /// </summary>
     /// <param name="clip">배경음악</param>
     /// <param name="volume">볼륨</param>z
@@ -184,6 +192,7 @@ public class AudioManager : MonoBehaviour
 
     /// <summary>
     /// BGM 일시정지
+    /// Pause bgm clip
     /// </summary>
     public void PauseBGM()
     {
@@ -192,6 +201,7 @@ public class AudioManager : MonoBehaviour
 
     /// <summary>
     /// BGM 일시정지 해제
+    /// Resume bgm clip
     /// </summary>
     public void ResumeBGM()
     {
@@ -201,6 +211,7 @@ public class AudioManager : MonoBehaviour
 
     /// <summary>
     /// BGM 정지
+    /// Stop bgm clip
     /// </summary>
     public void StopBGM()
     {
@@ -209,6 +220,7 @@ public class AudioManager : MonoBehaviour
 
     /// <summary>
     /// 효과음 클립 설정
+    /// Set effect clip source
     /// </summary>
     /// <param name="clip"></param>
     public void SetEffectClip(AudioClip clip)
@@ -218,6 +230,7 @@ public class AudioManager : MonoBehaviour
 
     /// <summary>
     /// 효과음 위치 조절
+    /// Set effect clip time (position)
     /// </summary>
     /// <param name="time"></param>
     public void SetEffectTime(float time)
@@ -227,6 +240,7 @@ public class AudioManager : MonoBehaviour
 
     /// <summary>
     /// 효과음 볼륨 조절
+    /// Set effect clip volume
     /// </summary>
     /// <param name="volume"></param>
     public void SetEffectVolume(float volume)
@@ -236,6 +250,7 @@ public class AudioManager : MonoBehaviour
 
     /// <summary>
     /// 효과음 재생
+    /// Play effect clip
     /// </summary>
     /// <param name="clip">효과음</param>
     public void PlayEffectSound(AudioClip clip)
@@ -245,6 +260,7 @@ public class AudioManager : MonoBehaviour
 
     /// <summary>
     /// 효과음 재생
+    /// Play effect clip with volume
     /// </summary>
     /// <param name="clip">효과음</param>
     /// <param name="volume">볼륨</param>
@@ -255,6 +271,7 @@ public class AudioManager : MonoBehaviour
 
     /// <summary>
     /// 효과음 일시정지
+    /// Pause effect clip
     /// </summary>
     public void PauseEffect()
     {
@@ -263,6 +280,7 @@ public class AudioManager : MonoBehaviour
 
     /// <summary>
     /// 효과음 일시정지 해제
+    /// Resume effect clip
     /// </summary>
     public void ResumeEffect()
     {
@@ -272,6 +290,7 @@ public class AudioManager : MonoBehaviour
 
     /// <summary>
     /// 효과음 정지
+    /// Stop effect clip
     /// </summary>
     public void StopEffect()
     {
