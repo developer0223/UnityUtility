@@ -161,6 +161,14 @@ namespace developer0223.WebRequestor
         #endregion
 
         #region Post Request
+        public static void Post(string url, Dictionary<string, string> queryData, Action<long, string> callback)
+        {
+            WebRequestor requestor = GetOrCreate();
+            string query = DictionaryToHttpQuery(queryData);
+            string generatedUrl = CombineUrlWithQuery(url, query);
+            requestor.StartCoroutine(requestor.Co_Post(generatedUrl, string.Empty, callback));
+        }
+
         public static void Post(string url, string bodyJson, Action<long, string> callback)
         {
             WebRequestor requestor = GetOrCreate();
